@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Lista de Ejercicios{% endblock %}
+{% block content %}
+<h1>Ejercicios</h1>
+
+<a href="#">Agregar Ejercicio</a>
+<table border="1" cellpadding="10" cellspacing="0" align="center" width="80%" bordercolor="#000000">    
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Grupo Muscular</th>
+            <th>Descanso</th>
+            <th>RIR</th>
+            <th>RPE</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for ejercicio in ejercicios %}
+            <tr>
+                <td>{{ ejercicio.nombre }}</td>
+                <td>{{ ejercicio.descripcion }}</td>
+                <td>{{ ejercicio.grupo_muscular }}</td>
+                <td>{{ ejercicio.descanso_segundos }}</td>
+                <td>{{ ejercicio.rir }}</td>
+                <td>{{ ejercicio.rpe }}</td>
+                <td>
+                    <a href="#">Editar</a>
+                    <a href="#">Eliminar</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
