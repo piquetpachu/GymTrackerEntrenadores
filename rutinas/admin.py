@@ -9,6 +9,6 @@ class RutinaAdmin(admin.ModelAdmin):
 
 @admin.register(EntradaEjercicio)
 class EntradaEjercicioAdmin(admin.ModelAdmin):
-    list_display = ("rutina", "ejercicio", "series", "repeticiones", "peso_kg")
+    list_display = ("rutina", "ejercicio", "series", "repeticiones", "peso_kg", "descanso_segundos", "rir", "rpe")
     search_fields = ("rutina__nombre", "ejercicio__nombre")
     list_filter = ("rutina", "ejercicio")

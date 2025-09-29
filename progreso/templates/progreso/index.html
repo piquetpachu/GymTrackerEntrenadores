@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Progreso de Clientes{% endblock %}
+{% block content %}
+<body>
+    <h1>Progreso de Clientes</h1>
+    <ul>
+        {% for cliente in clientes %}
+            <li>
+                <a href="{% url 'progreso:lista' cliente.id %}">{{ cliente.nombre }}</a>
+            </li>
+        {% empty %}
+            <li>No hay clientes registrados.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+    {% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Formulario De Entrada De Ejercicios{% endblock %}
+{% block content %}
+<body>
+    <h1>Agregar/Editar ejercicio en rutina</h1>
+    <form method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Guardar</button>
+    </form>
+<a href="{% url 'rutinas:detalle' rutina_id %}">Cancelar</a>
+</body>
+</html>
+
+        {% endblock %}

@@ -20,6 +20,9 @@ class EntradaEjercicio(models.Model):
     series = models.PositiveIntegerField()
     repeticiones = models.PositiveIntegerField()
     peso_kg = models.FloatField(null=True, blank=True)
+    descanso_segundos = models.PositiveIntegerField(default=60)
+    rir = models.PositiveIntegerField(help_text="Repeticiones en reserva", default=1)
+    rpe = models.PositiveIntegerField(help_text="Esfuerzo percibido (1-10)", default=9)
 
     def __str__(self):
         return f"{self.ejercicio.nombre} ({self.series}x{self.repeticiones})"

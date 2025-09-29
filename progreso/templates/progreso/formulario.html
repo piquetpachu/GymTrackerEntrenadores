@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Formulario de Progreso{% endblock %}
+{% block content %}
+<body>
+    <h1>Registro de progreso</h1>
+    <form method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Guardar</button>
+    </form>
+</body>
+</html>
+
+    {% endblock %}

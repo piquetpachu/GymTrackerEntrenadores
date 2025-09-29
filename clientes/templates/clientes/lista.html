@@ -1,37 +1,24 @@
 {% extends "base.html" %}
-{% block title %}Clientes{% endblock %}
-
+{% block title %}Lista de Clientes{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
+<body>
     <h1>Clientes</h1>
-    <a href="{% url 'clientes:crear' %}" class="btn btn-primary">➕ Nuevo Cliente</a>
-</div>
-
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Edad</th>
-            <th>Peso (kg)</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
+    <a href="{% url 'clientes:crear' %}">Nuevo cliente</a>
+    <ul>
         {% for cliente in clientes %}
-        <tr>
-            <td>{{ cliente.nombre }}</td>
-            <td>{{ cliente.edad }}</td>
-            <td>{{ cliente.peso_kg }}</td>
-            <td>
-                <a href="{% url 'clientes:detalle' cliente.id %}" class="btn btn-sm btn-info">Ver</a>
-                <a href="{% url 'clientes:editar' cliente.id %}" class="btn btn-sm btn-warning">Editar</a>
-            </td>
-        </tr>
+            <li>
+                <a href="{% url 'clientes:detalle' cliente.pk %}">
+                    {{ cliente.nombre }}
+                </a>
+                |
+                <a href="{% url 'clientes:editar' cliente.pk %}">Editar</a>
+                |
+                <a href="{% url 'clientes:eliminar' cliente.pk %}">Eliminar</a>
+            </li>
         {% empty %}
-        <tr>
-            <td colspan="4">No hay clientes registrados.</td>
-        </tr>
+            <li>No hay clientes registrados.</li>
         {% endfor %}
-    </tbody>
-</table>
+    </ul>
+</body>
+</html>
 {% endblock %}

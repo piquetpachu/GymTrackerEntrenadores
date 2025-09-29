@@ -1,9 +1,7 @@
-from django.shortcuts import render
-
-# Create your views here.
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.urls import reverse_lazy
 from .models import Cliente
+from .forms import ClienteForm
 
 class ClienteListaView(ListView):
     model = Cliente
@@ -17,12 +15,12 @@ class ClienteDetalleView(DetailView):
 
 class ClienteCrearView(CreateView):
     model = Cliente
+    form_class = ClienteForm
     template_name = "clientes/formulario.html"
-    fields = ["nombre", "edad", "altura_cm", "peso_kg", "lesiones", "entrenadores"]
     success_url = reverse_lazy("clientes:lista")
 
 class ClienteEditarView(UpdateView):
     model = Cliente
+    form_class = ClienteForm
     template_name = "clientes/formulario.html"
-    fields = ["nombre", "edad", "altura_cm", "peso_kg", "lesiones", "entrenadores"]
     success_url = reverse_lazy("clientes:lista")

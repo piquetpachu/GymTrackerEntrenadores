@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Formulario Rutina{% endblock %}
+{% block content %}
+<body>
+    <h1>Formulario Rutina</h1>
+    <form method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Guardar</button>
+    </form>
+    <a href="{% url 'rutinas:lista' %}">Cancelar</a>
+</body>
+</html>
+
+    {% endblock %}

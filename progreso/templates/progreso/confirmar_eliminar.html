@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Eliminar Progreso{% endblock %}
+{% block content %}
+<body>
+    <h1>¿Seguro que quieres eliminar este registro?</h1>
+    <form method="post">{% csrf_token %}
+        <button type="submit">Confirmar</button>
+    </form>
+</body>
+</html>
+
+    {% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Detalle Ejercicio{% endblock %}
+{% block content %}
+<body>
+    <h1>{{ ejercicio.nombre }}</h1>
+    <p><strong>Descripción:</strong> {{ ejercicio.descripcion }}</p>
+    <p><strong>Grupo muscular:</strong> {{ ejercicio.grupo_muscular }}</p>
+    <p><strong>Variante:</strong> {{ ejercicio.variante }}</p>
+    <a href="{% url 'ejercicios:lista' %}">Volver</a>
+</body>
+</html>
+{% endblock %}

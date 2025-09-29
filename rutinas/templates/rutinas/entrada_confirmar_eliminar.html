@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Eliminar Entrada{% endblock %}
+{% block content %}
+<body>
+    <h1>¿Seguro que quieres eliminar este ejercicio de la rutina?</h1>
+    <form method="post">{% csrf_token %}
+        <button type="submit">Sí, eliminar</button>
+    </form>
+    <a href="{% url 'rutinas:detalle' object.rutina.id %}">Cancelar</a>
+</body>
+</html>
+
+    {% endblock %}

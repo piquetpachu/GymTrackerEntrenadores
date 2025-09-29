@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Lista de Ejercicios{% endblock %}
+{% block content %}
+<body>
+    <h1>Ejercicios</h1>
+    <a href="{% url 'ejercicios:crear' %}">Nuevo ejercicio</a>
+    <ul>
+        {% for ejercicio in ejercicios %}
+            <li>
+                <a href="{% url 'ejercicios:detalle' ejercicio.pk %}">{{ ejercicio.nombre }}</a>
+                |
+                <a href="{% url 'ejercicios:editar' ejercicio.pk %}">Editar</a>
+                |
+                <a href="{% url 'ejercicios:eliminar' ejercicio.pk %}">Eliminar</a>
+            </li>
+        {% empty %}
+            <li>No hay ejercicios cargados.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+
+    {% endblock %}

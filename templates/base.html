@@ -9,6 +9,9 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
             <a class="navbar-brand" href="/">GymTrack</a>
+            <a href="{% url 'rutinas:lista' %}" class="btn btn-outline-light">Rutinas</a>
+            <a href="{% url 'clientes:lista' %}" class="btn btn-outline-light">Clientes</a>
+            <a href="{% url 'progreso:index' %}" class="btn btn-outline-light">Progreso</a>
         </div>
     </nav>
     <main class="container">

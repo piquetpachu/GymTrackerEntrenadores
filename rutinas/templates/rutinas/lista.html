@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Rutinas{% endblock %}
+{% block content %}
+<body>
+    <h1>Rutinas</h1>
+    <a href="{% url 'rutinas:crear' %}">Nueva rutina</a>
+    <ul>
+        {% for rutina in rutinas %}
+            <li>
+                <a href="{% url 'rutinas:detalle' rutina.pk %}">{{ rutina.nombre }}</a>
+                | <a href="{% url 'rutinas:editar' rutina.pk %}">Editar</a>
+                | <a href="{% url 'rutinas:eliminar' rutina.pk %}">Eliminar</a>
+            </li>
+        {% empty %}
+            <li>No hay rutinas.</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+
+    {% endblock %}
