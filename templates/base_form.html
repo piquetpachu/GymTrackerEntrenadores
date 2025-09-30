@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Formulario - GymTrack{% endblock %}
+
+{% block content %}
+<div class="card bg-secondary shadow-lg border-0">
+    <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">{% block form_title %}Formulario{% endblock %}</h5>
+    </div>
+    <div class="card-body">
+        <form method="post" class="needs-validation">
+            {% csrf_token %}
+            
+            {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label">{{ field.label }}</label>
+                    {% if field.help_text %}
+                        <div class="form-text text-light">{{ field.help_text }}</div>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <div class="d-flex justify-content-between">
+                <a href="javascript:history.back()" class="btn btn-outline-light">⬅️ Volver</a>
+                <button type="submit" class="btn btn-primary">💾 Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

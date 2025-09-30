@@ -1,9 +1,9 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from .models import Progreso
+from .models import Progreso, ProgresoEjercicio
 from clientes.models import Cliente
-from .forms import ProgresoForm
+from .forms import ProgresoForm, ProgresoEjercicioForm
 
 
 def index(request):
@@ -54,3 +54,36 @@ class ProgresoEliminarView(DeleteView):
 
     def get_success_url(self):
         return reverse_lazy("progreso:lista", kwargs={"cliente_id": self.object.cliente.id})
+
+
+def lista_progresos_ejercicios(request):
+    progresos = ProgresoEjercicio.objects.all().order_by("-fecha")
+    return render(request, "progreso/ejercicio_list.html", {"progresos": progresos})
+
+def crear_progreso_ejercicio(request):
+    if request.method == "POST":
+        form = ProgresoEjercicioForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("progreso:lista_progresos_ejercicios")
+    else:
+        form = ProgresoEjercicioForm()
+    return render(request, "progreso/ejercicio_form.html", {"form": form})
+
+def editar_progreso_ejercicio(request, pk):
+    progreso = get_object_or_404(ProgresoEjercicio, pk=pk)
+    if request.method == "POST":
+        form = ProgresoEjercicioForm(request.POST, instance=progreso)
+        if form.is_valid():
+            form.save()
+            return redirect("progreso:lista_progresos_ejercicios")
+    else:
+        form = ProgresoEjercicioForm(instance=progreso)
+    return render(request, "progreso/ejercicio_form.html", {"form": form})
+
+def eliminar_progreso_ejercicio(request, pk):
+    progreso = get_object_or_404(ProgresoEjercicio, pk=pk)
+    if request.method == "POST":
+        progreso.delete()
+        return redirect("progreso:lista_progresos_ejercicios")
+    return render(request, "progreso/ejercicio_confirm_delete.html", {"progreso": progreso})

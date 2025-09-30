@@ -23,6 +23,7 @@ class EntradaEjercicio(models.Model):
     descanso_segundos = models.PositiveIntegerField(default=60)
     rir = models.PositiveIntegerField(help_text="Repeticiones en reserva", default=1)
     rpe = models.PositiveIntegerField(help_text="Esfuerzo percibido (1-10)", default=9)
+    notas = models.TextField(blank=True)
 
     def __str__(self):
         return f"{self.ejercicio.nombre} ({self.series}x{self.repeticiones})"

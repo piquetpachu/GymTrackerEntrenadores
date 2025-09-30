@@ -4,12 +4,15 @@
 <body>
     <h1>Progreso de {{ cliente.nombre }}</h1>
     <a href="{% url 'progreso:nuevo' cliente.id %}">Agregar progreso</a>
+    <a href="{% url 'exportaciones:progreso_excel' cliente.id %}">📥 Exportar a Excel</a>
     <ul>
         {% for p in progresos %}
             <li>
                 {{ p.fecha }} - Peso: {{ p.peso_kg }} kg
                 <a href="{% url 'progreso:editar' p.id %}">Editar</a>
                 <a href="{% url 'progreso:eliminar' p.id %}">Eliminar</a>
+                
+
             </li>
         {% empty %}
             <li>No hay registros aún.</li>

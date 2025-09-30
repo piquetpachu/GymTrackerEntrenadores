@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Progreso de Clientes{% endblock %}
+{% block content %}
+<h1>¿Eliminar Progreso?</h1>
+<p>Estás por eliminar: {{ progreso.ejercicio }} - {{ progreso.fecha }}</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Sí, eliminar</button>
+    <a href="{% url 'progreso:lista_progresos_ejercicios' %}">Cancelar</a>
+</form>
+
+{% endblock %}

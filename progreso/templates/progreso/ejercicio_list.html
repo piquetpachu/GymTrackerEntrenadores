@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Progreso de Clientes{% endblock %}
+{% block content %}
+<h1>Progresos de Ejercicios</h1>
+<a href="{% url 'progreso:crear_progreso_ejercicio' %}">➕ Nuevo Progreso</a>
+<table border="1">
+    <tr>
+        <th>Fecha</th>
+        <th>Cliente</th>
+        <th>Rutina</th>
+        <th>Ejercicio</th>
+        <th>Series</th>
+        <th>Reps</th>
+        <th>Peso (kg)</th>
+        <th>Acciones</th>
+    </tr>
+    {% for p in progresos %}
+    <tr>
+        <td>{{ p.fecha }}</td>
+        <td>{{ p.cliente }}</td>
+        <td>{{ p.rutina }}</td>
+        <td>{{ p.ejercicio }}</td>
+        <td>{{ p.series }}</td>
+        <td>{{ p.repeticiones }}</td>
+        <td>{{ p.peso }}</td>
+        <td>
+            <a href="{% url 'progreso:editar_progreso_ejercicio' p.pk %}">Editar</a> |
+            <a href="{% url 'progreso:eliminar_progreso_ejercicio' p.pk %}">Eliminar</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="8">No hay progresos registrados</td></tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

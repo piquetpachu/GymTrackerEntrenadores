@@ -7,12 +7,15 @@
 
     <h2>Ejercicios en esta rutina</h2>
     <a href="{% url 'rutinas:entrada_crear' rutina.id %}">Agregar ejercicio</a>
+                    <a href="{% url 'exportaciones:rutina_excel' rutina.id %}">📥 Exportar rutina a Excel</a>
     <ul>
         {% for entrada in rutina.entradas.all %}
             <li>
                 {{ entrada.ejercicio.nombre }} - {{ entrada.series }}x{{ entrada.repeticiones }}
                 | <a href="{% url 'rutinas:entrada_editar' entrada.pk %}">Editar</a>
                 | <a href="{% url 'rutinas:entrada_eliminar' entrada.pk %}">Eliminar</a>
+
+
             </li>
         {% empty %}
             <li>No hay ejercicios agregados.</li>

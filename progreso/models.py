@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 from django.db import models
 from clientes.models import Cliente
+from rutinas.models import Ejercicio, Rutina
 
 class Progreso(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name="progresos")
@@ -22,3 +23,21 @@ class Progreso(models.Model):
 
     def __str__(self):
         return f"Progreso de {self.cliente.nombre} - {self.fecha}"
+
+
+class ProgresoEjercicio(models.Model):
+    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name="progresos_ejercicios")
+    rutina = models.ForeignKey(Rutina, on_delete=models.CASCADE, related_name="progresos_ejercicios", null=True, blank=True)
+    ejercicio = models.ForeignKey(Ejercicio, on_delete=models.CASCADE)
+    fecha = models.DateField(auto_now_add=True)
+
+    series = models.PositiveIntegerField(default=1)
+    repeticiones = models.PositiveIntegerField()
+    peso = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)  # kg usados
+    notas = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ["-fecha"]
+
+    def __str__(self):
+        return f"{self.ejercicio.nombre} - {self.repeticiones} reps @ {self.peso}kg ({self.fecha})"
