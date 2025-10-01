@@ -1,4 +1,5 @@
 from django.urls import path
+from . import views
 from .views import (
     RutinaListaView, RutinaDetalleView, RutinaCrearView,
     RutinaEditarView, RutinaEliminarView,
@@ -13,6 +14,8 @@ urlpatterns = [
     path("nueva/", RutinaCrearView.as_view(), name="crear"),
     path("editar/<int:pk>/", RutinaEditarView.as_view(), name="editar"),
     path("eliminar/<int:pk>/", RutinaEliminarView.as_view(), name="eliminar"),
+    
+    path("<int:rutina_id>/", views.rutina_detalle, name="rutina_detalle"),
 
     # entradas de ejercicios en la rutina
     path("<int:rutina_id>/entradas/nueva/", EntradaCrearView.as_view(), name="entrada_crear"),

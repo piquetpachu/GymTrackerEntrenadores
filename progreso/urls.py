@@ -6,7 +6,6 @@ from .views import (
     ProgresoCrearView,
     ProgresoEditarView,
     ProgresoEliminarView,
-    
 )
 
 app_name = "progreso"
@@ -22,4 +21,7 @@ urlpatterns = [
     path("ejercicios/nuevo/", views.crear_progreso_ejercicio, name="crear_progreso_ejercicio"),
     path("ejercicios/<int:pk>/editar/", views.editar_progreso_ejercicio, name="editar_progreso_ejercicio"),
     path("ejercicios/<int:pk>/eliminar/", views.eliminar_progreso_ejercicio, name="eliminar_progreso_ejercicio"),
+
+    path("registrar/<int:cliente_id>/<int:ejercicio_id>/", views.registrar_progreso, name="registrar"),
+
 ]

@@ -3,6 +3,7 @@ from django.urls import reverse_lazy
 from .models import Cliente
 from .forms import ClienteForm
 
+
 class ClienteListaView(ListView):
     model = Cliente
     template_name = "clientes/lista.html"
@@ -24,3 +25,7 @@ class ClienteEditarView(UpdateView):
     form_class = ClienteForm
     template_name = "clientes/formulario.html"
     success_url = reverse_lazy("clientes:lista")
+
+
+
+

@@ -2,8 +2,10 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from .models import Progreso, ProgresoEjercicio
+from ejercicios.models import Ejercicio
 from clientes.models import Cliente
 from .forms import ProgresoForm, ProgresoEjercicioForm
+from django.utils.timezone import now
 
 
 def index(request):
@@ -87,3 +89,26 @@ def eliminar_progreso_ejercicio(request, pk):
         progreso.delete()
         return redirect("progreso:lista_progresos_ejercicios")
     return render(request, "progreso/ejercicio_confirm_delete.html", {"progreso": progreso})
+
+def registrar_progreso(request, cliente_id, ejercicio_id):
+    cliente = get_object_or_404(Cliente, id=cliente_id)
+    ejercicio = get_object_or_404(Ejercicio, id=ejercicio_id)
+
+    if request.method == "POST":
+        peso = request.POST.get("peso")
+        repeticiones = request.POST.get("repeticiones")
+        if peso and repeticiones:
+            ProgresoEjercicio.objects.create(
+                cliente=cliente,
+                ejercicio=ejercicio,
+                peso=peso,
+                repeticiones=repeticiones,
+            )
+        return redirect("progreso:registrar", cliente_id=cliente.id, ejercicio_id=ejercicio.id)
+
+    progresos = ProgresoEjercicio.objects.filter(cliente=cliente, ejercicio=ejercicio).order_by("-fecha")[:10]
+    return render(request, "progreso/registrar.html", {
+        "cliente": cliente,
+        "ejercicio": ejercicio,
+        "progresos": progresos
+    })

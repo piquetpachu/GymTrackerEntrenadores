@@ -2,6 +2,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.urls import reverse_lazy
 from .models import Rutina, EntradaEjercicio
 from .forms import RutinaForm, EntradaEjercicioForm
+from django.shortcuts import render, get_object_or_404
 
 # CRUD de Rutinas
 class RutinaListaView(ListView):
@@ -74,3 +75,12 @@ class EntradaEliminarView(DeleteView):
 
     def get_success_url(self):
         return reverse_lazy("rutinas:detalle", kwargs={"rutina_id": self.object.rutina.pk})
+
+
+def rutina_detalle(request, rutina_id):
+    rutina = get_object_or_404(Rutina, id=rutina_id)
+    ejercicios = rutina.ejerciciorutina_set.all()  # suponiendo relación intermedia
+    return render(request, "rutinas/detalle.html", {
+        "rutina": rutina,
+        "ejercicios": ejercicios
+    })

@@ -2,18 +2,19 @@
 {% block title %}Detalle{% endblock %}
 {% block content %}
 <body>
-    <h1>{{ cliente.nombre }}</h1>
-    <p>Edad: {{ cliente.edad }}</p>
-    <p>Altura: {{ cliente.altura_cm }} cm</p>
-    <p>Peso: {{ cliente.peso_kg }} kg</p>
-    <p>Lesiones: {{ cliente.lesiones }}</p>
-    <p>Entrenadores: 
-        {% for entrenador in cliente.entrenadores.all %}
-            {{ entrenador }}{% if not forloop.last %}, {% endif %}
-        {% empty %}
-            (ninguno)
-        {% endfor %}
-    </p>
+    <h2>Rutinas de {{ cliente.nombre }}</h2>
+<ul>
+    {% for rutina in cliente.rutinas.all %}
+    <li>
+      <a href="{% url 'rutinas:rutina_detalle' rutina.id %}">
+        {{ rutina.nombre }}
+      </a>
+    </li>
+  {% empty %}
+    <li>No tiene rutinas asignadas.</li>
+  {% endfor %}
+</ul>
+
     <a href="{% url 'clientes:lista' %}">Volver</a>
 </body>
 </html>
