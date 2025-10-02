@@ -6,16 +6,19 @@ from ejercicios.models import Ejercicio
 from clientes.models import Cliente
 from .forms import ProgresoForm, ProgresoEjercicioForm
 from django.utils.timezone import now
+from usuarios.mixins import LoginRequiredCustomMixin, RolRequiredMixin, EntrenadorQuerysetMixin
+from django.contrib.auth.decorators import login_required
 
-
+@login_required
 def index(request):
     clientes = Cliente.objects.all()
     return render(request, "progreso/index.html", {"clientes": clientes})
 
-class ProgresoListaView(ListView):
+class ProgresoListaView(LoginRequiredCustomMixin, RolRequiredMixin, EntrenadorQuerysetMixin, ListView):
     model = Progreso
     template_name = "progreso/lista.html"
     context_object_name = "progresos"
+    rol_permitido = "entrenador"  # 👈 solo entrenadores
 
     def get_queryset(self):
         cliente = get_object_or_404(Cliente, pk=self.kwargs["cliente_id"])

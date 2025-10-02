@@ -11,7 +11,11 @@
     <ul>
         {% for entrada in rutina.entradas.all %}
             <li>
-                {{ entrada.ejercicio.nombre }} - {{ entrada.series }}x{{ entrada.repeticiones }}
+                <a href="{% url 'progreso:registrar' rutina.cliente.id entrada.ejercicio.id %}">
+    {{ entrada.ejercicio.nombre }}
+</a>
+
+                - {{ entrada.series }}x{{ entrada.repeticiones }}
                 | <a href="{% url 'rutinas:entrada_editar' entrada.pk %}">Editar</a>
                 | <a href="{% url 'rutinas:entrada_eliminar' entrada.pk %}">Eliminar</a>
 

@@ -32,7 +32,6 @@ class RutinaEliminarView(DeleteView):
     template_name = "rutinas/confirmar_eliminar.html"
     success_url = reverse_lazy("rutinas:lista")
 
-# CRUD de EntradaEjercicio
 from django.shortcuts import get_object_or_404
 from .models import Rutina, EntradaEjercicio
 

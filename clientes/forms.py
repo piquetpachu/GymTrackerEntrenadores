@@ -1,5 +1,6 @@
 from django import forms
 from .models import Cliente
+from usuarios.models import Usuario
 
 class ClienteForm(forms.ModelForm):
     class Meta:
@@ -13,3 +14,7 @@ class ClienteForm(forms.ModelForm):
             "peso_kg": forms.NumberInput(attrs={"class": "form-control"}),
             "entrenadores": forms.SelectMultiple(attrs={"class": "form-control"}),
         }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Solo mostrar usuarios con rol = "entrenador"
+        self.fields["entrenadores"].queryset = Usuario.objects.filter(rol="entrenador")

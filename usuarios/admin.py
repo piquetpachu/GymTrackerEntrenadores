@@ -1,8 +1,17 @@
 from django.contrib import admin
 from .models import Usuario
+from django.contrib.auth.admin import UserAdmin
+
 # Register your models here.
+
+
 @admin.register(Usuario)
-class UsuarioAdmin(admin.ModelAdmin):
-    list_display = ("username", "email", "rol", "is_staff", "is_active")
-    search_fields = ("username", "email", "rol")
-    list_filter = ("rol", "is_staff", "is_active")
+class UsuarioAdmin(UserAdmin):
+    # Mostrar el campo rol en el panel de edición
+    fieldsets = UserAdmin.fieldsets + (
+        ("Rol", {"fields": ("rol",)}),
+    )
+
+    add_fieldsets = UserAdmin.add_fieldsets + (
+        ("Rol", {"fields": ("rol",)}),
+    )
