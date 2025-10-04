@@ -4,6 +4,7 @@ from .views import (
     RutinaListaView, RutinaDetalleView, RutinaCrearView,
     RutinaEditarView, RutinaEliminarView,
     EntradaCrearView, EntradaEditarView, EntradaEliminarView,
+    RutinaCrearParaClienteView, RutinaEditarParaClienteView,RutinaEliminarParaClienteView
 )
 
 app_name = "rutinas"
@@ -14,6 +15,10 @@ urlpatterns = [
     path("nueva/", RutinaCrearView.as_view(), name="crear"),
     path("editar/<int:pk>/", RutinaEditarView.as_view(), name="editar"),
     path("eliminar/<int:pk>/", RutinaEliminarView.as_view(), name="eliminar"),
+
+    path("nuevo/<int:cliente_id>/", RutinaCrearParaClienteView.as_view(), name="crear_para_cliente"),
+    path("editar/<int:cliente_id>/<int:pk>/", RutinaEditarParaClienteView.as_view(), name="editar_para_cliente"),
+    path("eliminar/<int:cliente_id>/<int:pk>/", RutinaEliminarParaClienteView.as_view(), name="eliminar_para_cliente"),
     
     path("<int:rutina_id>/", views.rutina_detalle, name="rutina_detalle"),
 

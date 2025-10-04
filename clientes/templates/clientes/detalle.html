@@ -3,6 +3,10 @@
 {% block content %}
 <body>
     <h2>Rutinas de {{ cliente.nombre }}</h2>
+    <a href="{% url 'rutinas:crear_para_cliente' cliente.id %}" class="btn btn-success">
+  ➕ Agregar rutina
+</a>
+
 <ul>
     {% for rutina in cliente.rutinas.all %}
     <li>

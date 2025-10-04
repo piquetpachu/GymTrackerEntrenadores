@@ -38,12 +38,13 @@ class EntrenadorQuerysetMixin:
         if user.is_superuser:
             return qs
 
-        # Para modelos que tienen cliente con entrenadores (ej: Progreso)
+        # 👉 Caso Progreso o ProgresoEjercicio (usan cliente)
         if hasattr(self.model, "cliente"):
-            return qs.filter(cliente__entrenadores=user)
+            return qs.filter(cliente__entrenadores=user).distinct()
 
-        # Para modelos que tienen entrenadores directamente (ej: Cliente)
+        # 👉 Caso Cliente (tienen entrenadores directamente)
         if hasattr(self.model, "entrenadores"):
-            return qs.filter(entrenadores=user)
+            return qs.filter(entrenadores=user).distinct()
 
         return qs.none()
+

@@ -4,11 +4,10 @@ from .models import Rutina, EntradaEjercicio
 class RutinaForm(forms.ModelForm):
     class Meta:
         model = Rutina
-        fields = ["nombre", "descripcion", "cliente"]
+        fields = ["nombre", "descripcion"]
         widgets = {
             "nombre": forms.TextInput(attrs={"class": "form-control"}),
             "descripcion": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
-            "cliente": forms.Select(attrs={"class": "form-control"}),
         }
 
 class EntradaEjercicioForm(forms.ModelForm):

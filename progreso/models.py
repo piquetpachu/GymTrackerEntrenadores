@@ -5,6 +5,7 @@ from django.db import models
 from clientes.models import Cliente
 from rutinas.models import Ejercicio, Rutina
 
+
 class Progreso(models.Model):
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name="progresos")
     fecha = models.DateField(auto_now_add=True)

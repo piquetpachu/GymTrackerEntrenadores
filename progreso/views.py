@@ -9,10 +9,15 @@ from django.utils.timezone import now
 from usuarios.mixins import LoginRequiredCustomMixin, RolRequiredMixin, EntrenadorQuerysetMixin
 from django.contrib.auth.decorators import login_required
 
+
 @login_required
 def index(request):
-    clientes = Cliente.objects.all()
+    if request.user.is_superuser:
+        clientes = Cliente.objects.all()
+    else:
+        clientes = Cliente.objects.filter(entrenadores=request.user)
     return render(request, "progreso/index.html", {"clientes": clientes})
+
 
 class ProgresoListaView(LoginRequiredCustomMixin, RolRequiredMixin, EntrenadorQuerysetMixin, ListView):
     model = Progreso
@@ -21,14 +26,19 @@ class ProgresoListaView(LoginRequiredCustomMixin, RolRequiredMixin, EntrenadorQu
     rol_permitido = "entrenador"  # 👈 solo entrenadores
 
     def get_queryset(self):
+        user = self.request.user
         cliente = get_object_or_404(Cliente, pk=self.kwargs["cliente_id"])
+        
+        # 🔒 Seguridad: verificamos que el cliente pertenece al entrenador logueado
+        if not cliente.entrenadores.filter(id=user.id).exists():
+            return Progreso.objects.none()
+        
         return Progreso.objects.filter(cliente=cliente)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["cliente"] = get_object_or_404(Cliente, pk=self.kwargs["cliente_id"])
         return context
-
 
 class ProgresoCrearView(CreateView):
     model = Progreso
@@ -61,9 +71,18 @@ class ProgresoEliminarView(DeleteView):
         return reverse_lazy("progreso:lista", kwargs={"cliente_id": self.object.cliente.id})
 
 
-def lista_progresos_ejercicios(request):
-    progresos = ProgresoEjercicio.objects.all().order_by("-fecha")
-    return render(request, "progreso/ejercicio_list.html", {"progresos": progresos})
+def lista_progresos_ejercicios(request, cliente_id):
+    cliente = get_object_or_404(Cliente, pk=cliente_id)
+
+    # 🔒 Filtramos: solo entrenadores de este cliente pueden ver sus progresos
+    if not cliente.entrenadores.filter(id=request.user.id).exists():
+        return redirect("clientes:lista")  # o un 403 Forbidden
+    
+    progresos = ProgresoEjercicio.objects.filter(cliente=cliente).order_by("-fecha")
+    return render(request, "progreso/ejercicio_list.html", {
+        "cliente": cliente,
+        "progresos": progresos
+    })
 
 def crear_progreso_ejercicio(request):
     if request.method == "POST":
@@ -100,18 +119,61 @@ def registrar_progreso(request, cliente_id, ejercicio_id):
     if request.method == "POST":
         peso = request.POST.get("peso")
         repeticiones = request.POST.get("repeticiones")
+        notas = request.POST.get("notas", "").strip()
+
+        # Normalizar valores decimales (reemplazar coma por punto)
+        if peso:
+            peso = peso.replace(",", ".")
+        if repeticiones:
+            repeticiones = repeticiones.replace(",", ".")
+
         if peso and repeticiones:
             ProgresoEjercicio.objects.create(
                 cliente=cliente,
                 ejercicio=ejercicio,
                 peso=peso,
                 repeticiones=repeticiones,
+                notas=notas
             )
+
         return redirect("progreso:registrar", cliente_id=cliente.id, ejercicio_id=ejercicio.id)
 
-    progresos = ProgresoEjercicio.objects.filter(cliente=cliente, ejercicio=ejercicio).order_by("-fecha")[:10]
+    # Último progreso para autocompletar
+    ultimo_progreso = (
+        ProgresoEjercicio.objects.filter(cliente=cliente, ejercicio=ejercicio)
+        .order_by("-fecha")
+        .first()
+    )
+
+    # Los últimos 10 progresos
+    progresos = ProgresoEjercicio.objects.filter(
+        cliente=cliente, ejercicio=ejercicio
+    ).order_by("-fecha")[:10]
+
     return render(request, "progreso/registrar.html", {
         "cliente": cliente,
         "ejercicio": ejercicio,
-        "progresos": progresos
+        "progresos": progresos,
+        "ultimo_progreso": ultimo_progreso,
     })
+
+class HistorialEjercicioView(ListView):
+    model = ProgresoEjercicio
+    template_name = "progreso/historial_ejercicio.html"
+    context_object_name = "progresos"
+
+    def get_queryset(self):
+        cliente_id = self.kwargs["cliente_id"]
+        qs = ProgresoEjercicio.objects.filter(cliente_id=cliente_id).order_by("fecha")
+        ejercicio_id = self.request.GET.get("ejercicio")
+        if ejercicio_id:
+            qs = qs.filter(ejercicio_id=ejercicio_id)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["cliente"] = Cliente.objects.get(pk=self.kwargs["cliente_id"])
+        context["ejercicios"] = ProgresoEjercicio.objects.filter(
+            cliente_id=self.kwargs["cliente_id"]
+        ).values_list("ejercicio__id", "ejercicio__nombre").distinct()
+        return context

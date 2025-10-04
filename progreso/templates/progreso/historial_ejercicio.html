@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Progreso de {{ cliente.nombre }}{% endblock %}
+{% block content %}
+<h2>Historial de ejercicios de {{ cliente.nombre }}</h2>
+
+<form method="get">
+  <label>Filtrar por ejercicio:</label>
+  <select name="ejercicio" onchange="this.form.submit()">
+    <option value="">Todos</option>
+    {% for id, nombre in ejercicios %}
+      <option value="{{ id }}" {% if request.GET.ejercicio == id|stringformat:"s" %}selected{% endif %}>
+        {{ nombre }}
+      </option>
+    {% endfor %}
+  </select>
+</form>
+
+<table>
+  <tr>
+    <th>Fecha</th>
+    <th>Ejercicio</th>
+    <th>Series</th>
+    <th>Reps</th>
+    <th>Peso (kg)</th>
+    <th>Notas</th>
+  </tr>
+  {% for p in progresos %}
+  <tr>
+    <td>{{ p.fecha }}</td>
+    <td>{{ p.ejercicio.nombre }}</td>
+    <td>{{ p.series }}</td>
+    <td>{{ p.repeticiones }}</td>
+    <td>{{ p.peso }}</td>
+    <td>{{ p.notas }}</td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="6">No hay progresos registrados.</td></tr>
+  {% endfor %}
+</table>
+<a href="{% url 'progreso:lista' cliente.id %}">Volver al progreso</a>
+{% endblock %}
