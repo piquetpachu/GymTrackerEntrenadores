@@ -1,111 +1,150 @@
-{% extends "base.html" %}
-{% block title %}Registrar Progreso - {{ ejercicio.nombre }}{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Registrar Progreso - {{
+ejercicio.nombre }}{% endblock %} {% block content %}
 <div class="text-light">
-    <h2 class="mb-4">Registrar Progreso: {{ ejercicio.nombre }}</h2>
+  <h2 class="mb-4">Registrar Progreso: {{ ejercicio.nombre }}</h2>
 
-    <form method="post" class="mb-4">
-        {% csrf_token %}
+  <form method="post" class="mb-4">
+    {% csrf_token %}
 
-        <div class="mb-3">
-            <label class="form-label">Peso (kg)</label>
-            <div class="input-group">
-                <button type="button" class="btn btn-secondary" onclick="cambiarValor('peso', -2.5)">-</button>
-                <input type="number" step="0.5" id="peso" name="peso" class="form-control text-center"
-                       value="{{ ultimo_progreso.peso|default:0 }}">
-                <button type="button" class="btn btn-secondary" onclick="cambiarValor('peso', 2.5)">+</button>
-            </div>
+    <div class="mb-3">
+      <label class="form-label">Peso (kg)</label>
+      <div class="input-group">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="cambiarValor('peso', -2.5)"
+        >
+          -
+        </button>
+        <input
+          type="number"
+          step="0.5"
+          id="peso"
+          name="peso"
+          class="form-control text-center"
+          value="{{ ultimo_progreso.peso|default:0 }}"
+        />
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="cambiarValor('peso', 2.5)"
+        >
+          +
+        </button>
+      </div>
+    </div>
 
-        </div>
+    <div class="mb-3">
+      <label class="form-label">Reps</label>
+      <div class="input-group">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="cambiarValor('repeticiones', -1)"
+        >
+          -
+        </button>
+        <input
+          type="number"
+          id="repeticiones"
+          name="repeticiones"
+          class="form-control text-center"
+          value="{{ ultimo_progreso.repeticiones|default:0 }}"
+        />
+        <button
+          type="button"
+          class="btn btn-secondary"
+          onclick="cambiarValor('repeticiones', 1)"
+        >
+          +
+        </button>
+      </div>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label">Reps</label>
-            <div class="input-group">
-                <button type="button" class="btn btn-secondary" onclick="cambiarValor('repeticiones', -1)">-</button>
-                <input type="number" id="repeticiones" name="repeticiones" class="form-control text-center"
-                       value="{{ ultimo_progreso.repeticiones|default:0 }}">
-                <button type="button" class="btn btn-secondary" onclick="cambiarValor('repeticiones', 1)">+</button>
-            </div>
-        </div>
+    <div class="mb-3">
+      <label class="form-label">Notas</label>
+      <textarea name="notas" class="form-control" rows="2"></textarea>
+    </div>
 
-        <div class="mb-3">
-            <label class="form-label">Notas</label>
-            <textarea name="notas" class="form-control" rows="2"></textarea>
-        </div>
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-success">Guardar</button>
+      <button type="reset" class="btn btn-danger">Limpiar</button>
+    </div>
+  </form>
 
-        <div class="d-flex gap-2">
-            <button type="submit" class="btn btn-success">Guardar</button>
-            <button type="reset" class="btn btn-danger">Limpiar</button>
-        </div>
-    </form>
+  <h4>Historial</h4>
+  <canvas id="graficoProgreso" height="100" class="mb-4"></canvas>
 
-    <h4>Historial</h4>
-    <canvas id="graficoProgreso" height="100" class="mb-4"></canvas>
-
-    <table class="table table-dark table-striped">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Peso</th>
-                <th>Reps</th>
-                <th>Fecha</th>
-                <th>Notas</th>
-                <th>Acción</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for p in progresos %}
-            <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ p.peso }} kg</td>
-                <td>{{ p.repeticiones }}</td>
-                <td>{{ p.fecha|date:"d/m/Y" }}</td>
-                <td>{{ p.notas|default:"-" }}</td>
-                <td>
-                    <!-- Botón para reutilizar valores -->
-                    <form method="post" action="{% url 'progreso:registrar' cliente.id ejercicio.id %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="peso" value="{{ p.peso }}">
-                        <input type="hidden" name="repeticiones" value="{{ p.repeticiones }}">
-                        <input type="hidden" name="notas" value="{{ p.notas }}">
-                        <button type="submit" class="btn btn-sm btn-primary">Usar</button>
-                    </form>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="6" class="text-center">Aún no hay progresos</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+  <table class="table table-dark table-striped">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Peso</th>
+        <th>Reps</th>
+        <th>Fecha</th>
+        <th>Notas</th>
+        <th>Acción</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in progresos %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ p.peso }} kg</td>
+        <td>{{ p.repeticiones }}</td>
+        <td>{{ p.fecha|date:"d/m/Y" }}</td>
+        <td>{{ p.notas|default:"-" }}</td>
+        <td>
+          <!-- Botón para reutilizar valores -->
+          <form
+            method="post"
+            action="{% url 'progreso:registrar' cliente.id ejercicio.id %}"
+          >
+            {% csrf_token %}
+            <input type="hidden" name="peso" value="{{ p.peso }}" />
+            <input
+              type="hidden"
+              name="repeticiones"
+              value="{{ p.repeticiones }}"
+            />
+            <input type="hidden" name="notas" value="{{ p.notas }}" />
+            <button type="submit" class="btn btn-sm btn-primary">Usar</button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="6" class="text-center">Aún no hay progresos</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-function cambiarValor(id, delta) {
-    let input = document.getElementById(id);
-    let valor = parseFloat(input.value) || 0;
-    valor += delta;
-    if (valor < 0) valor = 0;
-    input.value = valor;
-}
+  function cambiarValor(id, delta) {
+      let input = document.getElementById(id);
+      let valor = parseFloat(input.value) || 0;
+      valor += delta;
+      if (valor < 0) valor = 0;
+      input.value = valor;
+  }
 
-// Chart.js - Evolución del progreso
-const ctx = document.getElementById('graficoProgreso');
-new Chart(ctx, {
-    type: 'line',
-    data: {
-        labels: [{% for p in progresos reversed %}"{{ p.fecha|date:'d/m' }}",{% endfor %}],
-        datasets: [{
-            label: 'Peso (kg)',
-            data: [{% for p in progresos reversed %}{{ p.peso|default:0 }},{% endfor %}],
-            borderColor: 'rgb(75, 192, 192)',
-            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-            tension: 0.2
-        }]
-    }
-});
+  // Chart.js - Evolución del progreso
+  const ctx = document.getElementById('graficoProgreso');
+  new Chart(ctx, {
+      type: 'line',
+      data: {
+          labels: [{% for p in progresos reversed %}"{{ p.fecha|date:'d/m' }}",{% endfor %}],
+          datasets: [{
+              label: 'Peso (kg)',
+              data: [{% for p in progresos reversed %}{{ p.peso|default:0 }},{% endfor %}],
+              borderColor: 'rgb(75, 192, 192)',
+              backgroundColor: 'rgba(75, 192, 192, 0.2)',
+              tension: 0.2
+          }]
+      }
+  });
 </script>
 {% endblock %}
