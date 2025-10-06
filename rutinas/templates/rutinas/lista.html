@@ -1,21 +1,71 @@
 {% extends "base.html" %}
 {% block title %}Rutinas{% endblock %}
-{% block content %}
-<body>
-    <h1>Rutinas</h1>
-    <a href="{% url 'rutinas:crear' %}">Nueva rutina</a>
-    <ul>
-        {% for rutina in rutinas %}
-            <li>
-                <a href="{% url 'rutinas:detalle' rutina.pk %}">{{ rutina.nombre }}</a>
-                | <a href="{% url 'rutinas:editar' rutina.pk %}">Editar</a>
-                | <a href="{% url 'rutinas:eliminar' rutina.pk %}">Eliminar</a>
-            </li>
-        {% empty %}
-            <li>No hay rutinas.</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
 
-    {% endblock %}
+{% block content %}
+<div class="container mt-4 text-light">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Rutinas</h2>
+    <a href="{% url 'rutinas:crear' %}" class="btn btn-success">+ Nueva rutina</a>
+  </div>
+
+  <!-- Buscador -->
+  <input
+    type="text"
+    id="buscadorRutinas"
+    class="form-control mb-3"
+    placeholder="Buscar rutina por nombre o cliente..."
+  />
+
+  <!-- Tabla -->
+  <div class="table-responsive">
+    <table class="table table-dark table-hover align-middle">
+      <thead class="table-primary text-dark">
+        <tr>
+          <th>#</th>
+          <th>Nombre</th>
+          <th>Cliente</th>
+          <th>Notas</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tablaRutinas">
+        {% for rutina in rutinas %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>
+            <a href="{% url 'rutinas:detalle' rutina.pk %}" class="text-light text-decoration-none">
+              {{ rutina.nombre }}
+            </a>
+          </td>
+          <td>{{ rutina.cliente.nombre }}</td>
+          <td>{{ rutina.descripcion|truncatechars:60 }}</td>
+          <td>
+            <div class="btn-group btn-group-sm" role="group">
+              <a href="{% url 'rutinas:editar' rutina.pk %}" class="btn btn-warning">✏️</a>
+              <a href="{% url 'rutinas:eliminar' rutina.pk %}" class="btn btn-danger">🗑️</a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="5" class="text-center">No hay rutinas cargadas.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Filtro en tiempo real -->
+<script>
+document.getElementById("buscadorRutinas").addEventListener("keyup", function() {
+  const filtro = this.value.toLowerCase();
+  const filas = document.querySelectorAll("#tablaRutinas tr");
+
+  filas.forEach(fila => {
+    const texto = fila.textContent.toLowerCase();
+    fila.style.display = texto.includes(filtro) ? "" : "none";
+  });
+});
+</script>
+{% endblock %}

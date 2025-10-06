@@ -1,18 +1,48 @@
 {% extends "base.html" %}
 {% block title %}Progreso de Clientes{% endblock %}
-{% block content %}
-<body>
-    <h1>Progreso de Clientes</h1>
-    <ul>
-        {% for cliente in clientes %}
-            <li>
-                <a href="{% url 'progreso:lista' cliente.id %}">{{ cliente.nombre }}</a>
-            </li>
-        {% empty %}
-            <li>No hay clientes registrados.</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
 
+{% block content %}
+<div class="container mt-4 text-light">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">📊 Progreso de Clientes</h2>
+    <a href="{% url 'clientes:lista' %}" class="btn btn-outline-light">⬅️ Volver a Clientes</a>
+  </div>
+
+  {% if clientes %}
+  <div class="table-responsive">
+    <table class="table table-dark table-striped align-middle">
+      <thead class="table-primary text-dark">
+        <tr>
+          <th>#</th>
+          <th>Nombre</th>
+          <th>Edad</th>
+          <th>Peso (kg)</th>
+          <th>Altura (cm)</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cliente in clientes %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td class="fw-bold">{{ cliente.nombre }}</td>
+          <td>{{ cliente.edad|default:"-" }}</td>
+          <td>{{ cliente.peso_kg|default:"-" }}</td>
+          <td>{{ cliente.altura_cm|default:"-" }}</td>
+          <td>
+            <a href="{% url 'progreso:lista' cliente.id %}" class="btn btn-sm btn-info text-dark fw-bold">
+              📈 Ver Progreso
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="alert alert-secondary text-center mt-3">
+    No hay clientes registrados aún.
+  </div>
+  {% endif %}
+</div>
 {% endblock %}

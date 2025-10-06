@@ -1,24 +1,71 @@
 {% extends "base.html" %}
-{% block title %}Lista de Clientes{% endblock %}
+{% block title %}Login{% endblock %} 
 {% block content %}
-<body>
-    <h1>Clientes</h1>
-    <a href="{% url 'clientes:crear' %}">Nuevo cliente</a>
-    <ul>
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+  <h2>Mis Clientes</h2>
+
+      <a href="{% url 'clientes:crear' %}" class="btn btn-success">+ Nuevo cliente</a>
+    </div>
+    </div>
+
+  <!-- Barra de búsqueda -->
+  <input
+    type="text"
+    id="buscadorClientes"
+    class="form-control mb-3"
+    placeholder="Buscar cliente por nombre..."
+  />
+    <h2>Ejercicios</h2>
+
+  <!-- Tabla de clientes -->
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-primary">
+        <tr>
+          <th>Nombre</th>
+          <th>Email</th>
+          <th>Teléfono</th>
+          
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tablaClientes">
         {% for cliente in clientes %}
-            <li>
-                <a href="{% url 'clientes:detalle' cliente.pk %}">
-                    {{ cliente.nombre }}
-                </a>
-                |
-                <a href="{% url 'clientes:editar' cliente.pk %}">Editar</a>
-                |
-                <a href="{% url 'clientes:eliminar' cliente.pk %}">Eliminar</a>
-            </li>
+        <tr>
+          <td>{{ cliente.nombre }}</td>
+          <td>{{ cliente.email }}</td>
+          <td>{{ cliente.telefono }}</td>
+          <td>
+            <a href="{% url 'clientes:detalle' cliente.pk %}">Ver</a>
+            <a href="{% url 'clientes:editar' cliente.pk %}">Editar</a>
+            <a href="{% url 'clientes:eliminar' cliente.pk %}">Eliminar</a>
+          </td>
+        </tr>
         {% empty %}
-            <li>No hay clientes registrados.</li>
+        <tr>
+          <td colspan="4" class="text-center">No tienes clientes asignados</td>
+        </tr>
         {% endfor %}
-    </ul>
-</body>
-</html>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  // Filtro en tiempo real
+  document
+    .getElementById("buscadorClientes")
+    .addEventListener("keyup", function () {
+      const filtro = this.value.toLowerCase();
+      const filas = document.querySelectorAll("#tablaClientes tr");
+
+      filas.forEach((fila) => {
+        const nombre =
+          fila.querySelector("td:first-child")?.textContent.toLowerCase() || "";
+        fila.style.display = nombre.includes(filtro) ? "" : "none";
+      });
+    });
+</script>
 {% endblock %}

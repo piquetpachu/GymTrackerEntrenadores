@@ -1,23 +1,73 @@
 {% extends "base.html" %}
 {% block title %}Lista de Ejercicios{% endblock %}
-{% block content %}
-<body>
-    <h1>Ejercicios</h1>
-    <a href="{% url 'ejercicios:crear' %}">Nuevo ejercicio</a>
-    <ul>
-        {% for ejercicio in ejercicios %}
-            <li>
-                <a href="{% url 'ejercicios:detalle' ejercicio.pk %}">{{ ejercicio.nombre }}</a>
-                |
-                <a href="{% url 'ejercicios:editar' ejercicio.pk %}">Editar</a>
-                |
-                <a href="{% url 'ejercicios:eliminar' ejercicio.pk %}">Eliminar</a>
-            </li>
-        {% empty %}
-            <li>No hay ejercicios cargados.</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
 
-    {% endblock %}
+{% block content %}
+<div class="container mt-4 text-light">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Ejercicios</h2>
+    <a href="{% url 'ejercicios:crear' %}" class="btn btn-success">+ Nuevo ejercicio</a>
+  </div>
+
+  <!-- Buscador -->
+  <input
+    type="text"
+    id="buscadorEjercicios"
+    class="form-control mb-3"
+    placeholder="Buscar ejercicio por nombre o descripción..."
+  />
+
+  <!-- Tabla -->
+  <div class="table-responsive">
+    <table class="table table-dark table-hover align-middle">
+      <thead class="table-primary text-dark">
+        <tr>
+          <th>#</th>
+          <th>Nombre</th>
+          <th>Grupo Muscular</th>
+          <th>Variante</th>
+          <th>Notas</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tablaEjercicios">
+        {% for ejercicio in ejercicios %}
+        <tr>
+          <td>{{ forloop.counter }}</td>
+          <td>
+            <a href="{% url 'ejercicios:detalle' ejercicio.pk %}" class="text-light text-decoration-none">
+              {{ ejercicio.nombre }}
+            </a>
+          </td>
+          <td>{{ ejercicio.grupo_muscular }}</td>
+          <td>{{ ejercicio.variante }}</td>
+          <td>{{ ejercicio.descripcion|truncatechars:60 }}</td>
+          <td>
+            <div class="btn-group btn-group-sm" role="group">
+              <a href="{% url 'ejercicios:editar' ejercicio.pk %}" class="btn btn-warning">✏️</a>
+              <a href="{% url 'ejercicios:eliminar' ejercicio.pk %}" class="btn btn-danger">🗑️</a>
+            </div>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="4" class="text-center">No hay ejercicios cargados.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Filtro en tiempo real -->
+<script>
+document.getElementById("buscadorEjercicios").addEventListener("keyup", function() {
+  const filtro = this.value.toLowerCase();
+  const filas = document.querySelectorAll("#tablaEjercicios tr");
+
+  filas.forEach(fila => {
+    const texto = fila.textContent.toLowerCase();
+    fila.style.display = texto.includes(filtro) ? "" : "none";
+  });
+});
+</script>
+{% endblock %}

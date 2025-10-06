@@ -4,6 +4,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import RegistroForm
 from django.contrib.auth.decorators import login_required
+from clientes.models import Cliente
 
 
 def login_view(request):
@@ -44,4 +45,5 @@ def panel_entrenador(request):
 
 @login_required
 def panel_admin(request):
+    clientes = Cliente.objects.all()
     return render(request, "usuarios/panel_admin.html")

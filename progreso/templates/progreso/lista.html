@@ -1,24 +1,59 @@
 {% extends "base.html" %}
 {% block title %}Progreso de {{ cliente.nombre }}{% endblock %}
+
 {% block content %}
-<body>
-    <h1>Progreso de {{ cliente.nombre }}</h1>
-    <a href="{% url 'progreso:nuevo' cliente.id %}">Agregar progreso</a>
-    <a href="{% url 'exportaciones:progreso_excel' cliente.id %}">📥 Exportar a Excel</a>
-    <ul>
-        {% for p in progresos %}
-            <li>
-                {{ p.fecha }} - Peso: {{ p.peso_kg }} kg
-                <a href="{% url 'progreso:editar' p.id %}">Editar</a>
-                <a href="{% url 'progreso:eliminar' p.id %}">Eliminar</a>
-                
+<div class="container mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-4 text-gray-800">
+        Progreso de {{ cliente.nombre }}
+    </h1>
 
-            </li>
-        {% empty %}
-            <li>No hay registros aún.</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+    <div class="flex justify-between mb-4">
+        <div class="space-x-2">
+            <a href="{% url 'progreso:nuevo' cliente.id %}" 
+               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+               ➕ Agregar progreso
+            </a>
+            <a href="{% url 'exportaciones:progreso_excel' cliente.id %}" 
+               class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
+               📥 Exportar a Excel
+            </a>
+        </div>
+        <a href="{% url 'progreso:index' %}" >⬅ Volver a lista de clientes</a>
+ 
+           
+    </div>
 
-    {% endblock %}
+    {% if progresos %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full border border-gray-200 rounded-lg shadow-sm">
+                <thead class="bg-gray-100 text-gray-700">
+                    <tr>
+                        <th class="px-4 py-2 text-left">Fecha</th>
+                        <th class="px-4 py-2 text-left">Peso (kg)</th>
+                        <th class="px-4 py-2 text-left">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for p in progresos %}
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-4 py-2">{{ p.fecha }}</td>
+                        <td class="px-4 py-2">{{ p.peso_kg }}</td>
+                        <td class="px-4 py-2 space-x-2">
+                            <a href="{% url 'progreso:editar' p.id %}" 
+                               class="text-blue-600 hover:underline">Editar</a>
+                            <a href="{% url 'progreso:eliminar' p.id %}" 
+                               class="text-red-600 hover:underline"
+                               onclick="return confirm('¿Seguro que deseas eliminar este registro?')">
+                               Eliminar
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p class="text-gray-600 mt-4">No hay registros aún.</p>
+    {% endif %}
+</div>
+{% endblock %}
