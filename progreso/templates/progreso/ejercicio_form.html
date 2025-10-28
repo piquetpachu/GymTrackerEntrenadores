@@ -1,12 +1,15 @@
 {% extends "base.html" %}
-{% block title %}Progreso de Clientes{% endblock %}
+{% block title %}{{ form.instance.pk|yesno:"Editar Progreso,Crear Progreso" }}{% endblock %}
+
 {% block content %}
-<h1>{{ form.instance.pk|yesno:"Editar Progreso,Crear Progreso" }}</h1>
-<form method="post">
+<div class="container mt-4 text-light">
+  <h1>{{ form.instance.pk|yesno:"Editar Progreso,Crear Progreso" }}</h1>
+
+  <form method="post" class="mb-3">
     {% csrf_token %}
     {{ form.as_p }}
-    <button type="submit">Guardar</button>
-</form>
-<a href="{% url 'progreso:lista_progresos_ejercicios' %}">⬅ Volver</a>
-
-    {% endblock %}
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <a href="{% url 'progreso:lista_progresos_ejercicios' cliente.id %}" class="btn btn-secondary">⬅ Volver</a>
+  </form>
+</div>
+{% endblock %}

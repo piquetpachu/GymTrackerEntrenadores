@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Panel del Entrenador{% endblock %}
+{% block content %}
+
+<div class="container mt-4 text-light">
+  <h1 class="mb-4">🏋️ Panel del Entrenador</h1>
+
+  <!-- Sección 1: Clientes -->
+  <div class="card bg-dark mb-4 shadow-lg">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">👥 Tus Clientes</h4>
+    </div>
+    <div class="card-body">
+      {% if clientes %}
+        <div class="table-responsive">
+          <table class="table table-dark table-striped align-middle">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Progreso</th>
+                <th>Rutinas</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for cliente in clientes %}
+              <tr>
+                <td>{{ cliente.nombre }}</td>
+                <td>
+                  <a href="{% url 'progreso:lista' cliente.id %}" class="btn btn-sm btn-info">📈 Ver Progreso</a>
+                </td>
+                <td>
+                  <a href="{% url 'rutinas:rutinas_cliente' cliente.id %}" class="btn btn-sm btn-warning">🏋️ Rutinas</a>
+                </td>
+                <td>
+                  <a href="{% url 'clientes:detalle' cliente.id %}" class="btn btn-sm btn-secondary">🔍 Ver</a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-muted">Aún no tenés clientes asignados.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Sección 2: Rutinas recientes -->
+  <div class="row">
+    <div class="col-md-6 mb-4">
+      <div class="card bg-dark shadow-lg">
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0">🏋️ Rutinas recientes</h4>
+        </div>
+        <div class="card-body">
+          {% if rutinas_recientes %}
+            <ul class="list-group list-group-flush">
+              {% for rutina in rutinas_recientes %}
+                <li class="list-group-item bg-dark text-light d-flex justify-content-between align-items-center">
+                  {{ rutina.nombre }} - {{ rutina.cliente.nombre }}
+                  <a href="{% url 'rutinas:detalle' rutina.id %}" class="btn btn-sm btn-outline-light">Ver</a>
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted">No hay rutinas recientes.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Sección 3: Progresos recientes -->
+    <div class="col-md-6 mb-4">
+      <div class="card bg-dark shadow-lg">
+        <div class="card-header bg-info text-white">
+          <h4 class="mb-0">📊 Últimos progresos</h4>
+        </div>
+        <div class="card-body">
+          {% if progresos_recientes %}
+            <ul class="list-group list-group-flush">
+              {% for p in progresos_recientes %}
+                <li class="list-group-item bg-dark text-light">
+                  {{ p.fecha|date:"d/m/Y" }} — {{ p.cliente.nombre }} | {{ p.ejercicio.nombre }}: {{ p.peso }} kg x {{ p.repeticiones }}
+                </li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="text-muted">No hay progresos recientes.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -21,6 +21,8 @@ urlpatterns = [
     path("eliminar/<int:cliente_id>/<int:pk>/", RutinaEliminarParaClienteView.as_view(), name="eliminar_para_cliente"),
     
     path("<int:rutina_id>/", views.rutina_detalle, name="rutina_detalle"),
+    path('cliente/<int:cliente_id>/', views.rutinas_cliente, name='rutinas_cliente'),
+
 
     # entradas de ejercicios en la rutina
     path("<int:rutina_id>/entradas/nueva/", EntradaCrearView.as_view(), name="entrada_crear"),

@@ -1,81 +1,66 @@
-{% extends "base.html" %} {% block title %}Registrar Progreso - {{
-ejercicio.nombre }}{% endblock %} {% block content %}
-<div class="text-light">
+{% extends "base.html" %}
+{% block title %}Registrar Progreso - {{ ejercicio.nombre }}{% endblock %}
+
+{% block content %}
+<div class="text-light container mt-4">
   <h2 class="mb-4">Registrar Progreso: {{ ejercicio.nombre }}</h2>
 
-  <form method="post" class="mb-4">
+  <!-- Formulario -->
+  <form method="post" id="formProgreso" class="mb-4">
     {% csrf_token %}
+    <input type="hidden" name="progreso_id" id="progreso_id" value="" />
 
-    <div class="mb-3">
-      <label class="form-label">Peso (kg)</label>
-      <div class="input-group">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          onclick="cambiarValor('peso', -2.5)"
-        >
-          -
-        </button>
-        <input
-          type="number"
-          step="0.5"
-          id="peso"
-          name="peso"
-          class="form-control text-center"
-          value="{{ ultimo_progreso.peso|default:0 }}"
-        />
-        <button
-          type="button"
-          class="btn btn-secondary"
-          onclick="cambiarValor('peso', 2.5)"
-        >
-          +
-        </button>
+    <div class="row g-3">
+      <!-- Peso -->
+      <div class="col-md-4">
+        <label class="form-label">Peso (kg)</label>
+        <div class="input-group">
+          <button type="button" class="btn btn-secondary" onclick="cambiarValor('peso', -2.5)">-</button>
+          <input
+            type="number"
+            step="0.5"
+            id="peso"
+            name="peso"
+            class="form-control text-center"
+            value="{{ ultimo_progreso.peso|default_if_none:0 }}"
+            min="0"
+          />
+          <button type="button" class="btn btn-secondary" onclick="cambiarValor('peso', 2.5)">+</button>
+        </div>
+      </div>
+
+      <!-- Reps -->
+      <div class="col-md-4">
+        <label class="form-label">Reps</label>
+        <div class="input-group">
+          <button type="button" class="btn btn-secondary" onclick="cambiarValor('repeticiones', -1)">-</button>
+          <input
+            type="number"
+            id="repeticiones"
+            name="repeticiones"
+            class="form-control text-center"
+            value="{{ ultimo_progreso.repeticiones|default:0 }}"
+          />
+          <button type="button" class="btn btn-secondary" onclick="cambiarValor('repeticiones', 1)">+</button>
+        </div>
+      </div>
+
+      <!-- Notas -->
+      <div class="col-md-4">
+        <label class="form-label">Notas</label>
+        <textarea name="notas" id="notas" class="form-control" rows="1"></textarea>
       </div>
     </div>
 
-    <div class="mb-3">
-      <label class="form-label">Reps</label>
-      <div class="input-group">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          onclick="cambiarValor('repeticiones', -1)"
-        >
-          -
-        </button>
-        <input
-          type="number"
-          id="repeticiones"
-          name="repeticiones"
-          class="form-control text-center"
-          value="{{ ultimo_progreso.repeticiones|default:0 }}"
-        />
-        <button
-          type="button"
-          class="btn btn-secondary"
-          onclick="cambiarValor('repeticiones', 1)"
-        >
-          +
-        </button>
-      </div>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Notas</label>
-      <textarea name="notas" class="form-control" rows="2"></textarea>
-    </div>
-
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 mt-3">
       <button type="submit" class="btn btn-success">Guardar</button>
-      <button type="reset" class="btn btn-danger">Limpiar</button>
+      <button type="reset" class="btn btn-danger" onclick="limpiarFormulario()">Limpiar</button>
     </div>
   </form>
 
+  <!-- Tabla de historial -->
   <h4>Historial</h4>
-  <canvas id="graficoProgreso" height="100" class="mb-4"></canvas>
-
-  <table class="table table-dark table-striped">
+  <table class="table table-dark table-striped align-middle">
     <thead>
       <tr>
         <th>#</th>
@@ -94,57 +79,110 @@ ejercicio.nombre }}{% endblock %} {% block content %}
         <td>{{ p.repeticiones }}</td>
         <td>{{ p.fecha|date:"d/m/Y" }}</td>
         <td>{{ p.notas|default:"-" }}</td>
-        <td>
-          <!-- Botón para reutilizar valores -->
+        <td class="d-flex flex-wrap gap-1">
+          <!-- Editar -->
+          <button
+            type="button"
+            class="btn btn-sm btn-warning"
+            onclick="editarProgreso('{{ p.id }}', '{{ p.peso }}', '{{ p.repeticiones }}', `{{ p.notas|escapejs }}`)"
+          >
+            Editar
+          </button>
+
+          <!-- Duplicar -->
+          <a href="{% url 'progreso:duplicar_progreso_ejercicio' cliente.id p.id %}" class="btn btn-sm btn-primary">
+            Duplicar
+          </a>
+
+          <!-- Eliminar -->
           <form
             method="post"
-            action="{% url 'progreso:registrar' cliente.id ejercicio.id %}"
+            action="{% url 'progreso:eliminar_progreso_ejercicio' cliente.id p.id %}"
+            style="display:inline-block;"
           >
             {% csrf_token %}
-            <input type="hidden" name="peso" value="{{ p.peso }}" />
-            <input
-              type="hidden"
-              name="repeticiones"
-              value="{{ p.repeticiones }}"
-            />
-            <input type="hidden" name="notas" value="{{ p.notas }}" />
-            <button type="submit" class="btn btn-sm btn-primary">Usar</button>
+            <button
+              type="submit"
+              class="btn btn-sm btn-danger"
+              onclick="return confirm('¿Confirmar borrado?');"
+            >
+              Borrar
+            </button>
           </form>
         </td>
       </tr>
       {% empty %}
       <tr>
-        <td colspan="6" class="text-center">Aún no hay progresos</td>
+        <td colspan="6" class="text-center">Aún no hay progresos registrados</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
+
+  <!-- Gráfico -->
+  <h4 class="mt-5">Evolución del peso</h4>
+  <canvas id="graficoProgreso" height="120"></canvas>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   function cambiarValor(id, delta) {
-      let input = document.getElementById(id);
-      let valor = parseFloat(input.value) || 0;
-      valor += delta;
-      if (valor < 0) valor = 0;
-      input.value = valor;
+    const input = document.getElementById(id);
+    let valor = parseFloat(input.value) || 0;
+    valor += delta;
+    if (valor < 0) valor = 0;
+    input.value = valor.toFixed(1);
   }
 
-  // Chart.js - Evolución del progreso
-  const ctx = document.getElementById('graficoProgreso');
+  function limpiarFormulario() {
+    document.getElementById("progreso_id").value = "";
+    document.getElementById("peso").value = 0;
+    document.getElementById("repeticiones").value = 0;
+    document.getElementById("notas").value = "";
+  }
+
+  function editarProgreso(id, peso, repeticiones, notas) {
+    document.getElementById("progreso_id").value = id;
+    document.getElementById("peso").value = peso;
+    document.getElementById("repeticiones").value = repeticiones;
+    document.getElementById("notas").value = notas;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  // (Opcional) Si en algún momento querés volver a duplicar desde JS:
+  /*
+  function duplicarProgreso(peso, repeticiones, notas) {
+    document.getElementById("progreso_id").value = "";
+    document.getElementById("peso").value = peso;
+    document.getElementById("repeticiones").value = repeticiones;
+    document.getElementById("notas").value = notas;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  */
+
+  // Gráfico de progreso
+  const ctx = document.getElementById("graficoProgreso");
   new Chart(ctx, {
-      type: 'line',
-      data: {
-          labels: [{% for p in progresos reversed %}"{{ p.fecha|date:'d/m' }}",{% endfor %}],
-          datasets: [{
-              label: 'Peso (kg)',
-              data: [{% for p in progresos reversed %}{{ p.peso|default:0 }},{% endfor %}],
-              borderColor: 'rgb(75, 192, 192)',
-              backgroundColor: 'rgba(75, 192, 192, 0.2)',
-              tension: 0.2
-          }]
+    type: "line",
+    data: {
+      labels: [{% for p in progresos reversed %}"{{ p.fecha|date:'d/m' }}",{% endfor %}],
+      datasets: [
+        {
+          label: "Peso (kg)",
+          data: [{% for p in progresos reversed %}{{ p.peso|default:0 }},{% endfor %}],
+          borderColor: "rgb(75, 192, 192)",
+          backgroundColor: "rgba(75, 192, 192, 0.2)",
+          tension: 0.2
+        }
+      ]
+    },
+    options: {
+      plugins: { legend: { labels: { color: "#fff" } } },
+      scales: {
+        x: { ticks: { color: "#ddd" } },
+        y: { ticks: { color: "#ddd" } }
       }
+    }
   });
 </script>
 {% endblock %}

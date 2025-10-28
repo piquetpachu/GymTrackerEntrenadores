@@ -74,7 +74,7 @@ class EntradaEliminarView(DeleteView):
     template_name = "rutinas/entrada_confirmar_eliminar.html"
 
     def get_success_url(self):
-        return reverse_lazy("rutinas:detalle", kwargs={"rutina_id": self.object.rutina.pk})
+        return reverse_lazy("rutinas:detalle", kwargs={"pk": self.object.rutina.pk})
 
 
 def rutina_detalle(request, rutina_id):
@@ -148,3 +148,9 @@ class RutinaEliminarParaClienteView(DeleteView):
         context = super().get_context_data(**kwargs)
         context["cliente"] = self.cliente
         return context
+
+
+def rutinas_cliente(request, cliente_id):
+    cliente = get_object_or_404(Cliente, id=cliente_id)
+    rutinas = Rutina.objects.filter(cliente=cliente)
+    return render(request, 'rutinas/lista.html', {'cliente': cliente, 'rutinas': rutinas})

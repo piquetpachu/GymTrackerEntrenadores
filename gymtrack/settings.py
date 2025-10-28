@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "progreso",
     "exportaciones",
     "analiticas",
+    "dashboard",
 ]
 
 AUTH_USER_MODEL = "usuarios.Usuario"
