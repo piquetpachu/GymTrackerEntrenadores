@@ -1,55 +1,116 @@
 {% extends "base.html" %}
-{% block title %}Login{% endblock %} 
+{% block title %}Mis Clientes{% endblock %} 
 {% block content %}
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-  <h2>Mis Clientes</h2>
-
-      <a href="{% url 'clientes:crear' %}" class="btn btn-success">+ Nuevo cliente</a>
+<div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 py-8 px-4">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header y Botón -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-white mb-2">Mis Clientes</h1>
+        <p class="text-gray-400">Gestiona y organiza la información de tus clientes</p>
+      </div>
+      <a href="{% url 'clientes:crear' %}" class="inline-flex items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg transition-colors shadow-lg">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        Nuevo Cliente
+      </a>
     </div>
+
+    <!-- Barra de búsqueda -->
+    <div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-6 mb-8">
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <input
+          type="text"
+          id="buscadorClientes"
+          class="block w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+          placeholder="Buscar cliente por nombre..."
+        />
+      </div>
     </div>
 
-  <!-- Barra de búsqueda -->
-  <input
-    type="text"
-    id="buscadorClientes"
-    class="form-control mb-3"
-    placeholder="Buscar cliente por nombre..."
-  />
-    <h2>Ejercicios</h2>
-
-  <!-- Tabla de clientes -->
-  <div class="table-responsive">
-    <table class="table table-hover align-middle">
-      <thead class="table-primary">
-        <tr>
-          <th>Nombre</th>
-          <th>Email</th>
-          <th>Teléfono</th>
-          
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="tablaClientes">
-        {% for cliente in clientes %}
-        <tr>
-          <td>{{ cliente.nombre }}</td>
-          <td>{{ cliente.email }}</td>
-          <td>{{ cliente.telefono }}</td>
-          <td>
-            <a href="{% url 'clientes:detalle' cliente.pk %}">Ver</a>
-            <a href="{% url 'clientes:editar' cliente.pk %}">Editar</a>
-            <a href="{% url 'clientes:eliminar' cliente.pk %}">Eliminar</a>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="4" class="text-center">No tienes clientes asignados</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <!-- Tabla de clientes -->
+    <div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-700">
+        <h2 class="text-xl font-bold text-white">Lista de Clientes</h2>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-700">
+          <thead class="bg-gray-750">
+            <tr>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Nombre</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Email</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Teléfono</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="bg-gray-800 divide-y divide-gray-700" id="tablaClientes">
+            {% for cliente in clientes %}
+            <tr class="hover:bg-gray-750 transition-colors">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                    {{ cliente.nombre|slice:":1"|upper }}
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-white">{{ cliente.nombre }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-300">{{ cliente.email|default:"-" }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-300">{{ cliente.telefono|default:"-" }}</div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex space-x-3">
+                  <a href="{% url 'clientes:detalle' cliente.pk %}" class="inline-flex items-center px-3 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-lg transition-colors">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                    Ver
+                  </a>
+                  <a href="{% url 'clientes:editar' cliente.pk %}" class="inline-flex items-center px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white text-sm font-medium rounded-lg transition-colors">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    Editar
+                  </a>
+                  <a href="{% url 'clientes:eliminar' cliente.pk %}" class="inline-flex items-center px-3 py-2 bg-rose-600 hover:bg-rose-500 text-white text-sm font-medium rounded-lg transition-colors">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    Eliminar
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="4" class="px-6 py-12 text-center">
+                <div class="text-center">
+                  <svg class="w-16 h-16 mx-auto text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                  </svg>
+                  <h3 class="text-lg font-medium text-gray-400 mb-2">No tienes clientes asignados</h3>
+                  <p class="text-gray-500">Comienza agregando tu primer cliente usando el botón de arriba</p>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -63,7 +124,7 @@
 
       filas.forEach((fila) => {
         const nombre =
-          fila.querySelector("td:first-child")?.textContent.toLowerCase() || "";
+          fila.querySelector("td:first-child .text-white")?.textContent.toLowerCase() || "";
         fila.style.display = nombre.includes(filtro) ? "" : "none";
       });
     });
