@@ -19,14 +19,17 @@ urlpatterns = [
     path("editar/<int:pk>/", ProgresoEditarView.as_view(), name="editar"),
     path("eliminar/<int:pk>/", ProgresoEliminarView.as_view(), name="eliminar"),
 
-    # ejercicios (corregidas)
+    # --- Ejercicios ---
     path("<int:cliente_id>/ejercicios/", views.lista_progresos_ejercicios, name="lista_progresos_ejercicios"),
     path("<int:cliente_id>/ejercicios/nuevo/", views.crear_progreso_ejercicio, name="crear_progreso_ejercicio"),
     path("<int:cliente_id>/ejercicios/<int:pk>/editar/", views.editar_progreso_ejercicio, name="editar_progreso_ejercicio"),
     path("<int:cliente_id>/ejercicios/<int:pk>/eliminar/", views.eliminar_progreso_ejercicio, name="eliminar_progreso_ejercicio"),
     path("<int:cliente_id>/ejercicios/<int:pk>/duplicar/", views.duplicar_progreso_ejercicio, name="duplicar_progreso_ejercicio"),
 
+    # 🔹 Nueva ruta especial para eliminar desde "registrar progreso"
+    path("<int:cliente_id>/ejercicios/<int:pk>/eliminar_desde_registrar/<int:ejercicio_id>/",
+         views.eliminar_progreso_desde_registrar, name="eliminar_progreso_desde_registrar"),
+
     path("registrar/<int:cliente_id>/<int:ejercicio_id>/", views.registrar_progreso, name="registrar"),
-    # path("historial/ejercicio/<int:cliente_id>/", HistorialEjercicioView.as_view(), name="historial_ejercicio"),
 ]
 

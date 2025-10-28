@@ -143,6 +143,32 @@ def eliminar_progreso_ejercicio(request, cliente_id, pk):
 
     return render(request, "progreso/ejercicio_confirm_delete.html", {"progreso": progreso, "cliente": cliente})
 
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect, render
+
+def eliminar_progreso_desde_registrar(request, cliente_id, pk, ejercicio_id):
+    """
+    Permite eliminar un progreso desde la vista 'registrar progreso'
+    y redirige nuevamente a esa misma pantalla.
+    """
+    cliente = get_object_or_404(Cliente, pk=cliente_id)
+    progreso = get_object_or_404(ProgresoEjercicio, pk=pk, cliente=cliente)
+
+    # Seguridad: sólo entrenadores del cliente o superusuarios
+    if not request.user.is_superuser and not cliente.entrenadores.filter(id=request.user.id).exists():
+        return redirect("clientes:lista")
+
+    if request.method == "POST":
+        progreso.delete()
+        messages.success(request, "Progreso eliminado correctamente.")
+        return redirect("progreso:registrar", cliente_id=cliente.id, ejercicio_id=ejercicio_id)
+
+    # Si alguien entra por GET, mostrar confirmación (opcional)
+    return render(
+        request,
+        "progreso/ejercicio_confirm_delete.html",
+        {"progreso": progreso, "cliente": cliente, "volver": f"/progreso/registrar/{cliente.id}/{ejercicio_id}/"},
+    )
 
 def registrar_progreso(request, cliente_id, ejercicio_id):
     cliente = get_object_or_404(Cliente, id=cliente_id)
