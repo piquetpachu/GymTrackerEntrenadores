@@ -3,31 +3,131 @@
 {% block title %}Formulario - GymTrack{% endblock %}
 
 {% block content %}
-<div class="card bg-secondary shadow-lg border-0">
-    <div class="card-header bg-dark text-white">
-        <h5 class="mb-0">{% block form_title %}Formulario{% endblock %}</h5>
-    </div>
-    <div class="card-body">
-        <form method="post" class="needs-validation">
-            {% csrf_token %}
-            
-            {% for field in form %}
-                <div class="mb-3">
-                    <label class="form-label">{{ field.label }}</label>
-                    {% if field.help_text %}
-                        <div class="form-text text-light">{{ field.help_text }}</div>
-                    {% endif %}
-                    {% for error in field.errors %}
-                        <div class="text-danger small">{{ error }}</div>
-                    {% endfor %}
-                </div>
-            {% endfor %}
+<div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 py-8 px-4">
+  <div class="max-w-2xl mx-auto">
+    <!-- Tarjeta del formulario -->
+    <div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 overflow-hidden">
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-gray-700 to-gray-800 px-6 py-4 border-b border-gray-600">
+        <h2 class="text-xl font-bold text-white">
+          {% block form_title %}Formulario{% endblock %}
+        </h2>
+      </div>
+      
+      <!-- Cuerpo del formulario -->
+      <div class="p-6">
+        <form method="post" class="space-y-6">
+          {% csrf_token %}
+          
+          {% for field in form %}
+            <div class="space-y-2">
+              <!-- Label -->
+              <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-300">
+                {{ field.label }}
+                {% if field.field.required %}
+                  <span class="text-rose-500 ml-1">*</span>
+                {% endif %}
+              </label>
 
-            <div class="d-flex justify-content-between">
-                <a href="javascript:history.back()" class="btn btn-outline-light">⬅️ Volver</a>
-                <button type="submit" class="btn btn-primary">💾 Guardar</button>
+              <!-- Help Text -->
+              {% if field.help_text %}
+                <p class="text-sm text-gray-400">{{ field.help_text }}</p>
+              {% endif %}
+
+              <!-- Campo de formulario -->
+              <div class="relative">
+                {{ field }}
+              </div>
+
+              <!-- Errores -->
+              {% for error in field.errors %}
+                <p class="text-sm text-rose-400 flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  {{ error }}
+                </p>
+              {% endfor %}
             </div>
+          {% endfor %}
+
+          <!-- Botones de acción -->
+          <div class="flex flex-col sm:flex-row justify-between gap-4 pt-6 border-t border-gray-700">
+            <a href="javascript:history.back()" class="inline-flex justify-center items-center px-6 py-3 bg-gray-600 hover:bg-gray-500 text-white font-medium rounded-lg transition-colors">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+              </svg>
+              Volver
+            </a>
+            
+            <button type="submit" class="inline-flex justify-center items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg transition-colors shadow-lg">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+              Guardar
+            </button>
+          </div>
         </form>
+      </div>
     </div>
+  </div>
 </div>
+
+<style>
+  /* Estilos para los campos del formulario Django */
+  input, textarea, select {
+    @apply w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors;
+  }
+  
+  /* Estilo específico para checkboxes */
+  input[type="checkbox"] {
+    @apply w-5 h-5 rounded bg-gray-700 border-gray-600 text-emerald-500 focus:ring-emerald-500 focus:ring-2;
+  }
+  
+  /* Estilo para radio buttons */
+  input[type="radio"] {
+    @apply w-5 h-5 bg-gray-700 border-gray-600 text-emerald-500 focus:ring-emerald-500 focus:ring-2;
+  }
+  
+  /* Estilo para selects múltiples */
+  select[multiple] {
+    @apply h-32;
+  }
+  
+  /* Estilo para etiquetas de checkboxes y radios */
+  .checkbox-label, .radio-label {
+    @apply flex items-center space-x-3 cursor-pointer;
+  }
+  
+  /* Mejorar la legibilidad de los placeholders */
+  ::placeholder {
+    @apply text-gray-500;
+  }
+  
+  /* Estilo para campos con errores */
+  .error input, .error textarea, .error select {
+    @apply border-rose-500 focus:ring-rose-500 focus:border-rose-500;
+  }
+</style>
+
+<!-- Script para manejar estilos de errores -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Agregar clase error a los campos con errores
+    const form = document.querySelector('form');
+    const fields = form.querySelectorAll('input, textarea, select');
+    
+    fields.forEach(field => {
+      const errors = field.parentElement.querySelector('.text-rose-400');
+      if (errors) {
+        field.classList.add('border-rose-500');
+      }
+      
+      // Agregar estilos dinámicos al focus
+      field.addEventListener('focus', function() {
+        this.classList.remove('border-rose-500');
+      });
+    });
+  });
+</script>
 {% endblock %}
