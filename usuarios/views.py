@@ -15,9 +15,9 @@ def login_view(request):
         if user is not None:
             login(request, user)
             if user.rol == "entrenador":
-                return redirect("usuarios:panel_entrenador")
+                return redirect("dashboard:entrenador")
             elif user.rol == "admin":
-                return redirect("usuarios:panel_admin")
+                return redirect("dashboard:entrenador")
             else:
                 messages.error(request, "Rol no reconocido.")
         else:
