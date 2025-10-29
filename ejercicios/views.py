@@ -3,10 +3,25 @@ from django.urls import reverse_lazy
 from .models import Ejercicio
 from .forms import EjercicioForm
 
+
 class EjercicioListaView(ListView):
     model = Ejercicio
     template_name = "ejercicios/lista.html"
     context_object_name = "ejercicios"
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        query = self.request.GET.get('q')
+        
+        if query:
+            # Busca en nombre, descripción, grupo muscular y variante
+            queryset = queryset.filter(
+                Q(nombre__icontains=query) |
+                Q(descripcion__icontains=query) |
+                Q(grupo_muscular__icontains=query) |
+                Q(variante__icontains=query)
+            )
+        return queryset
 
 class EjercicioDetalleView(DetailView):
     model = Ejercicio

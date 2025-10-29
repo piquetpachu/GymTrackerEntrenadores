@@ -18,7 +18,7 @@
       </a>
     </div>
 
-    <!-- Barra de búsqueda -->
+    <!-- Barra de búsqueda CORREGIDA -->
     <div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-6 mb-8">
       <div class="relative">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -115,39 +115,58 @@
   </div>
 </div>
 
-<!-- Filtro en tiempo real -->
+<!-- Script de filtro en tiempo real -->
 <script>
-document.getElementById("buscadorEjercicios").addEventListener("keyup", function() {
-  const filtro = this.value.toLowerCase();
-  const filas = document.querySelectorAll("#tablaEjercicios tr");
-
-  filas.forEach(fila => {
-    // Excluir la fila de "no hay ejercicios"
-    if (fila.cells.length === 1) return;
-    
-    const texto = fila.textContent.toLowerCase();
-    fila.style.display = texto.includes(filtro) ? "" : "none";
-  });
-
-  // Mostrar mensaje si no hay resultados
-  const resultadosVisibles = document.querySelectorAll('#tablaEjercicios tr[style=""]').length;
-  const filaVacia = document.querySelector('#tablaEjercicios tr:first-child');
+document.addEventListener('DOMContentLoaded', function() {
+  const buscador = document.getElementById("buscadorEjercicios");
   
-  if (resultadosVisibles === 0 && filaVacia && filaVacia.cells.length > 1) {
-    const tbody = document.getElementById('tablaEjercicios');
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="6" class="px-6 py-12 text-center">
-          <div class="text-center">
-            <svg class="w-16 h-16 mx-auto text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-            <h3 class="text-lg font-medium text-gray-400 mb-2">No se encontraron ejercicios</h3>
-            <p class="text-gray-500">Intenta con otros términos de búsqueda</p>
-          </div>
-        </td>
-      </tr>
-    `;
+  if (buscador) {
+    buscador.addEventListener("keyup", function() {
+      const filtro = this.value.toLowerCase();
+      const filas = document.querySelectorAll("#tablaEjercicios tr");
+      let resultadosVisibles = 0;
+
+      filas.forEach(fila => {
+        // Excluir la fila de "no hay ejercicios"
+        if (fila.cells.length === 1) return;
+        
+        const texto = fila.textContent.toLowerCase();
+        if (texto.includes(filtro)) {
+          fila.style.display = "";
+          resultadosVisibles++;
+        } else {
+          fila.style.display = "none";
+        }
+      });
+
+      // Manejar mensaje de "no resultados"
+      const tbody = document.getElementById('tablaEjercicios');
+      const mensajeExistente = tbody.querySelector('.mensaje-no-resultados');
+      
+      if (resultadosVisibles === 0) {
+        if (!mensajeExistente) {
+          const filaMensaje = document.createElement('tr');
+          filaMensaje.className = 'mensaje-no-resultados';
+          filaMensaje.innerHTML = `
+            <td colspan="6" class="px-6 py-12 text-center">
+              <div class="text-center">
+                <svg class="w-16 h-16 mx-auto text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <h3 class="text-lg font-medium text-gray-400 mb-2">No se encontraron ejercicios</h3>
+                <p class="text-gray-500">Intenta con otros términos de búsqueda</p>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(filaMensaje);
+        }
+      } else {
+        // Remover mensaje si hay resultados
+        if (mensajeExistente) {
+          mensajeExistente.remove();
+        }
+      }
+    });
   }
 });
 </script>
