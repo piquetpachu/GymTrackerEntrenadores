@@ -11,6 +11,7 @@ from clientes.models import Cliente
 from .forms import ProgresoForm, ProgresoEjercicioForm
 from usuarios.mixins import LoginRequiredCustomMixin, RolRequiredMixin, EntrenadorQuerysetMixin
 
+from django.utils.timezone import localdate
 
 @login_required
 def index(request):
@@ -174,53 +175,111 @@ def registrar_progreso(request, cliente_id, ejercicio_id):
     cliente = get_object_or_404(Cliente, id=cliente_id)
     ejercicio = get_object_or_404(Ejercicio, id=ejercicio_id)
 
-    # seguridad: sólo entrenadores / superuser
+    # Seguridad: solo admin o entrenador asignado
     if not request.user.is_superuser and not cliente.entrenadores.filter(id=request.user.id).exists():
         return redirect("clientes:lista")
 
+    # --- POST: guardar progreso ---
     if request.method == "POST":
         progreso_id = request.POST.get("progreso_id", "").strip()
         peso = request.POST.get("peso", "").replace(",", ".").strip()
         repeticiones = request.POST.get("repeticiones", "").strip()
         notas = request.POST.get("notas", "").strip()
 
-        # Si viene progreso_id, actualizamos
         if progreso_id:
-            progreso = get_object_or_404(ProgresoEjercicio, pk=progreso_id, cliente=cliente, ejercicio=ejercicio)
+            progreso = get_object_or_404(
+                ProgresoEjercicio,
+                pk=progreso_id,
+                cliente=cliente,
+                ejercicio=ejercicio,
+            )
             if peso != "":
-                progreso.peso = peso
+                try:
+                    progreso.peso = float(peso)
+                except ValueError:
+                    progreso.peso = 0
             if repeticiones != "":
                 try:
                     progreso.repeticiones = int(float(repeticiones))
                 except ValueError:
                     progreso.repeticiones = 0
-
             progreso.notas = notas
             progreso.save()
             messages.success(request, "Progreso actualizado correctamente.")
         else:
-            # crear sólo si hay reps o peso (evitamos crear vacíos)
-            nuevo = ProgresoEjercicio.objects.create(
+            try:
+                peso_val = float(peso) if peso != "" else None
+            except ValueError:
+                peso_val = None
+            try:
+                rep_val = int(float(repeticiones)) if repeticiones != "" else 0
+            except ValueError:
+                rep_val = 0
+
+            ProgresoEjercicio.objects.create(
                 cliente=cliente,
                 ejercicio=ejercicio,
-                peso=(peso if peso != "" else None),
-                repeticiones=(int(float(repeticiones)) if repeticiones != "" else 0),
-                notas=notas
+                peso=peso_val,
+                repeticiones=rep_val,
+                notas=notas,
             )
-
             messages.success(request, "Progreso registrado correctamente.")
 
         return redirect("progreso:registrar", cliente_id=cliente.id, ejercicio_id=ejercicio.id)
 
-    # GET: último y últimos 10 para la plantilla
-    ultimo_progreso = ProgresoEjercicio.objects.filter(cliente=cliente, ejercicio=ejercicio).order_by("-fecha").first()
-    progresos = ProgresoEjercicio.objects.filter(cliente=cliente, ejercicio=ejercicio).order_by("-fecha")[:10]
+    # --- GET: mostrar progreso ---
+    # Último registro del ejercicio (para obtener peso previo)
+    ultimo_progreso = (
+        ProgresoEjercicio.objects
+        .filter(cliente=cliente, ejercicio=ejercicio)
+        .order_by("-fecha")
+        .first()
+    )
+
+    # Obtener último peso o 0.0
+    if ultimo_progreso and ultimo_progreso.peso is not None:
+        try:
+            ultimo_peso = float(ultimo_progreso.peso)
+        except (ValueError, TypeError):
+            ultimo_peso = 0.0
+    else:
+        ultimo_peso = 0.0
+
+    # Convertir a string para el input (formateado)
+    ultimo_peso_str = f"{ultimo_peso:.1f}"
+
+    # Progresos del día actual
+    progresos = ProgresoEjercicio.objects.filter(
+        cliente=cliente,
+        ejercicio=ejercicio,
+        fecha=localdate()
+    ).order_by("-fecha")
+
+    # Todo el historial (para gráfico y modal)
+    progresos_todos = ProgresoEjercicio.objects.filter(
+        cliente=cliente,
+        ejercicio=ejercicio
+    ).order_by("-fecha")
 
     return render(request, "progreso/registrar.html", {
         "cliente": cliente,
         "ejercicio": ejercicio,
         "progresos": progresos,
+        "ultimo_peso": ultimo_peso_str,  # 🔹 string formateado para el input
         "ultimo_progreso": ultimo_progreso,
+        "progresos_todos": progresos_todos,
+    })
+
+
+def historial_progreso(request, cliente_id, ejercicio_id):
+    cliente = get_object_or_404(Cliente, id=cliente_id)
+    ejercicio = get_object_or_404(Ejercicio, id=ejercicio_id)
+    progresos = ProgresoEjercicio.objects.filter(cliente=cliente, ejercicio=ejercicio).order_by("-fecha")
+
+    return render(request, "progreso/historial_modal.html", {
+        "cliente": cliente,
+        "ejercicio": ejercicio,
+        "progresos": progresos,
     })
 
 

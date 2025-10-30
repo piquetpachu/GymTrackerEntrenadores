@@ -28,3 +28,4 @@ class ProgresoEjercicioForm(forms.ModelForm):
     class Meta:
         model = ProgresoEjercicio
         fields = ["cliente", "rutina", "ejercicio", "series", "repeticiones", "peso", "notas"]
+        

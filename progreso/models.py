@@ -36,6 +36,14 @@ class ProgresoEjercicio(models.Model):
     repeticiones = models.PositiveIntegerField()
     peso = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)  # kg usados
     notas = models.TextField(blank=True)
+    rir = models.PositiveIntegerField(
+        null=True, blank=True,
+        help_text="Repeticiones en reserva (0-5 aprox)"
+    )
+    rpe = models.PositiveIntegerField(
+        null=True, blank=True,
+        help_text="Esfuerzo percibido (1-10)"
+    )
 
     class Meta:
         ordering = ["-fecha"]
