@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
         'localhost',
+        '10.0.11.228',
     '127.0.0.1', 
     '192.168.101.8',  # ← Tu IP aquí (sin el puerto)
     # También puedes agregar:
