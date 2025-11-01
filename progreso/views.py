@@ -56,6 +56,10 @@ class ProgresoCrearView(CreateView):
     def get_success_url(self):
         return reverse_lazy("progreso:lista", kwargs={"cliente_id": self.kwargs["cliente_id"]})
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["cliente_id"] = self.kwargs["cliente_id"]  # 👈 agregamos esto
+        return context
 
 class ProgresoEditarView(UpdateView):
     model = Progreso
