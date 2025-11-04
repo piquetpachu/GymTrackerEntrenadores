@@ -7,26 +7,10 @@ from django.contrib.auth.decorators import login_required
 from clientes.models import Cliente
 
 
-def login_view(request):
-    if request.method == "POST":
-        username = request.POST["username"]
-        password = request.POST["password"]
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            if user.rol == "entrenador":
-                return redirect("dashboard:entrenador")
-            elif user.rol == "admin":
-                return redirect("dashboard:entrenador")
-            else:
-                messages.error(request, "Rol no reconocido.")
-        else:
-            messages.error(request, "Usuario o contraseña incorrectos.")
-    return render(request, "usuarios/login.html")
 
 def logout_view(request):
     logout(request)
-    return redirect("usuarios:login")
+    return redirect("account_login")
 
 def registro_view(request):
     if request.method == "POST":

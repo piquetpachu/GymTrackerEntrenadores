@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 # ✅ Obliga a que el usuario esté logueado
 class LoginRequiredCustomMixin(LoginRequiredMixin):
-    login_url = "/usuarios/login/"
+    login_url = "account_login"  # Página de login personalizada
     login_redirect_url = '/'   # A dónde mandar al usuario después de loguearse
     logout_redirect_url = '/'  # A dónde mandar al usuario después de hacer logout
 
