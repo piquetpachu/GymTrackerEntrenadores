@@ -1,12 +1,89 @@
 {% extends "base.html" %}
-{% block title %}Detalle Ejercicio{% endblock %}
+{% block title %}Detalle Ejercicio - {{ ejercicio.nombre }}{% endblock %}
 {% block content %}
-<body>
-    <h1>{{ ejercicio.nombre }}</h1>
-    <p><strong>Descripción:</strong> {{ ejercicio.descripcion }}</p>
-    <p><strong>Grupo muscular:</strong> {{ ejercicio.grupo_muscular }}</p>
-    <p><strong>Variante:</strong> {{ ejercicio.variante }}</p>
-    <a href="{% url 'ejercicios:lista' %}">Volver</a>
-</body>
-</html>
+
+<div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 py-8 px-4">
+  <div class="max-w-3xl mx-auto">
+    <!-- Header simple -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-white mb-2">{{ ejercicio.nombre }}</h1>
+      <p class="text-gray-400">Información detallada del ejercicio</p>
+    </div>
+
+    <!-- Tarjeta de información -->
+    <div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 overflow-hidden">
+      <!-- Header de la tarjeta -->
+      <div class="bg-gradient-to-r from-emerald-700 to-emerald-800 px-6 py-4">
+        <div class="flex items-center justify-center">
+          <svg class="w-6 h-6 text-white mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+          <h2 class="text-xl font-bold text-white">Detalles del Ejercicio</h2>
+        </div>
+      </div>
+
+      <!-- Contenido -->
+      <div class="p-6 space-y-6">
+        <!-- Grupo muscular -->
+        <div class="flex items-center space-x-4">
+          <span class="text-sm font-medium text-gray-300 w-32">Grupo muscular:</span>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-500 text-white">
+            {{ ejercicio.grupo_muscular }}
+          </span>
+        </div>
+
+        <!-- Variante -->
+        <div class="flex items-start space-x-4">
+          <span class="text-sm font-medium text-gray-300 w-32">Variante:</span>
+          <div class="flex-1">
+            {% if ejercicio.variante %}
+              <span class="text-white">{{ ejercicio.variante }}</span>
+            {% else %}
+              <span class="text-gray-400 italic">No especificada</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Descripción -->
+        <div class="flex items-start space-x-4">
+          <span class="text-sm font-medium text-gray-300 w-32">Descripción:</span>
+          <div class="flex-1">
+            {% if ejercicio.descripcion %}
+              <div class="bg-gray-750 rounded-lg p-4 border border-gray-600">
+                <p class="text-gray-200 leading-relaxed">{{ ejercicio.descripcion|linebreaksbr }}</p>
+              </div>
+            {% else %}
+              <span class="text-gray-400 italic">Sin descripción</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Información adicional simple -->
+        <div class="pt-6 border-t border-gray-700">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div class="text-center">
+              <span class="text-gray-400 block">Creado</span>
+              <span class="text-white">{{ ejercicio.fecha_creacion|date:"d/m/Y" }}</span>
+            </div>
+            <div class="text-center">
+              <span class="text-gray-400 block">Última modificación</span>
+              <span class="text-white">{{ ejercicio.fecha_modificacion|date:"d/m/Y" }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Botón volver simple -->
+    <div class="mt-8 text-center">
+      <a href="{% url 'ejercicios:lista' %}" class="inline-flex items-center px-6 py-3 bg-gray-600 hover:bg-gray-500 text-white font-medium rounded-lg transition-colors">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Volver a Ejercicios
+      </a>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

@@ -1,32 +1,93 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block title %}Lista de Ejercicios{% endblock %}
-{% block content %}
-<h1>Ejercicios</h1>
 
-<a href="#">Agregar Ejercicio</a>
-<table border="1" cellpadding="10" cellspacing="0" align="center" width="80%" bordercolor="#000000">    
-    <thead>
-        <tr>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Grupo Muscular</th>
-            <th>Variante</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for ejercicio in ejercicios %}
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 py-8 px-4">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header y Botón -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-white mb-2">Ejercicios</h1>
+        <p class="text-gray-400">Gestiona tu biblioteca de ejercicios</p>
+      </div>
+      <a href="#" class="inline-flex items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg transition-colors shadow-lg">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        Agregar Ejercicio
+      </a>
+    </div>
+
+    <!-- Tabla de ejercicios -->
+    <div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-700">
+        <h2 class="text-xl font-bold text-white">Lista de Ejercicios</h2>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-700">
+          <thead class="bg-emerald-700">
             <tr>
-                <td>{{ ejercicio.nombre }}</td>
-                <td>{{ ejercicio.descripcion }}</td>
-                <td>{{ ejercicio.grupo_muscular }}</td>
-                <td>{{ ejercicio.variante }}</td>
-                <td>
-                    <a href="#">Editar</a>
-                    <a href="#">Eliminar</a>
-                </td>
+              <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Nombre</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Descripción</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Grupo Muscular</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Variante</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Acciones</th>
             </tr>
-        {% endfor %}
-    </tbody>
-</table>
+          </thead>
+          <tbody class="bg-gray-800 divide-y divide-gray-700">
+            {% for ejercicio in ejercicios %}
+            <tr class="hover:bg-gray-750 transition-colors group">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm font-medium text-white">{{ ejercicio.nombre }}</div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-gray-300 max-w-xs">
+                  {{ ejercicio.descripcion|default:"-" }}
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-500 text-white">
+                  {{ ejercicio.grupo_muscular|default:"-" }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="text-sm text-gray-300">
+                  {{ ejercicio.variante|default:"-" }}
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <a href="#" class="inline-flex items-center px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white text-sm font-medium rounded-lg transition-colors" title="Editar ejercicio">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  </a>
+                  <a href="#" class="inline-flex items-center px-3 py-2 bg-rose-600 hover:bg-rose-500 text-white text-sm font-medium rounded-lg transition-colors" title="Eliminar ejercicio">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" class="px-6 py-12 text-center">
+                <div class="text-center">
+                  <svg class="w-16 h-16 mx-auto text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                  <h3 class="text-lg font-medium text-gray-400 mb-2">No hay ejercicios cargados</h3>
+                  <p class="text-gray-500">Comienza agregando tu primer ejercicio usando el botón de arriba</p>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

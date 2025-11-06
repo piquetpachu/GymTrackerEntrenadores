@@ -2,58 +2,224 @@
 {% block title %}Progreso de {{ cliente.nombre }}{% endblock %}
 
 {% block content %}
-<div class="container mx-auto p-6">
-    <h1 class="text-2xl font-bold mb-4 text-gray-800">
-        Progreso de {{ cliente.nombre }}
-    </h1>
 
-    <div class="flex justify-between mb-4">
-        <div class="space-x-2">
-            <a href="{% url 'progreso:nuevo' cliente.id %}" 
-               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
-               ➕ Agregar progreso
-            </a>
-            <a href="{% url 'exportaciones:progreso_excel' cliente.id %}" 
-               class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition">
-               📥 Exportar a Excel
-            </a>
-        </div>
-        <a href="{% url 'progreso:index' %}" >⬅ Volver a lista de clientes</a>
- 
-           
+<div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 py-8 px-4">
+      <!-- Resumen general -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <!-- Peso actual -->
+  <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-lg text-center">
+    <p class="text-gray-400 text-sm">Peso actual</p>
+    <h2 class="text-2xl font-bold text-white mt-1">
+      {{ resumen.fisico.ultimo_peso|default:"—" }} kg
+    </h2>
+  </div>
+
+  <!-- Peso promedio -->
+  <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-lg text-center">
+    <p class="text-gray-400 text-sm">Peso promedio</p>
+    <h2 class="text-2xl font-bold text-white mt-1">
+      {{ resumen.fisico.peso_promedio|floatformat:1|default:"—" }} kg
+    </h2>
+  </div>
+
+  <!-- Peso máximo -->
+  <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-lg text-center">
+    <p class="text-gray-400 text-sm">Peso máximo</p>
+    <h2 class="text-2xl font-bold text-white mt-1">
+      {{ resumen.fisico.peso_max|default:"—" }} kg
+    </h2>
+  </div>
+
+  <!-- Peso mínimo -->
+  <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-lg text-center">
+    <p class="text-gray-400 text-sm">Peso mínimo</p>
+    <h2 class="text-2xl font-bold text-white mt-1">
+      {{ resumen.fisico.peso_min|default:"—" }} kg
+    </h2>
+  </div>
+</div>
+  <div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-white mb-2">Progreso de {{ cliente.nombre }}</h1>
+        <p class="text-gray-400">Seguimiento y evolución del cliente</p>
+      </div>
+      <div class="flex items-center space-x-3">
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-500 text-white">
+          {{ progresos.count }} registro{{ progresos.count|pluralize }}
+        </span>
+      </div>
     </div>
 
-    {% if progresos %}
-        <div class="overflow-x-auto">
-            <table class="min-w-full border border-gray-200 rounded-lg shadow-sm">
-                <thead class="bg-gray-100 text-gray-700">
-                    <tr>
-                        <th class="px-4 py-2 text-left">Fecha</th>
-                        <th class="px-4 py-2 text-left">Peso (kg)</th>
-                        <th class="px-4 py-2 text-left">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-                    {% for p in progresos %}
-                    <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-2">{{ p.fecha }}</td>
-                        <td class="px-4 py-2">{{ p.peso_kg }}</td>
-                        <td class="px-4 py-2 space-x-2">
-                            <a href="{% url 'progreso:editar' p.id %}" 
-                               class="text-blue-600 hover:underline">Editar</a>
-                            <a href="{% url 'progreso:eliminar' p.id %}" 
-                               class="text-red-600 hover:underline"
-                               onclick="return confirm('¿Seguro que deseas eliminar este registro?')">
-                               Eliminar
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <!-- Botones de acción -->
+    <div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-6 mb-8">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex flex-wrap gap-3">
+          <a href="{% url 'progreso:nuevo' cliente.id %}" 
+             class="inline-flex items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg transition-colors shadow-lg">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Agregar Progreso
+          </a>
+          <a href="{% url 'exportaciones:progreso_excel' cliente.id %}" 
+             class="inline-flex items-center px-6 py-3 bg-green-600 hover:bg-green-500 text-white font-medium rounded-lg transition-colors shadow-lg">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            Exportar a Excel
+          </a>
         </div>
+        <a href="{% url 'progreso:index' %}" 
+           class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-500 text-white font-medium rounded-lg transition-colors">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          Volver a Clientes
+        </a>
+      </div>
+    </div>
+
+    <!-- Tabla de progresos -->
+    {% if progresos %}
+    <div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-700">
+        <h2 class="text-xl font-bold text-white">Historial de Progreso</h2>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-700">
+          <thead class="bg-emerald-700">
+            <tr>
+              <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Fecha</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Peso (kg)</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="bg-gray-800 divide-y divide-gray-700">
+            {% for p in progresos %}
+            <tr class="hover:bg-gray-750 transition-colors group">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="flex-shrink-0 h-10 w-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-white">{{ p.fecha }}</div>
+                    <div class="text-xs text-gray-400">Registro #{{ forloop.counter }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path>
+                    </svg>
+                    {{ p.peso_kg }} kg
+                  </span>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <a href="{% url 'progreso:editar' p.id %}" 
+                     class="inline-flex items-center px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white text-sm font-medium rounded-lg transition-colors"
+                     title="Editar registro">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  </a>
+                  <a href="{% url 'progreso:eliminar' p.id %}" 
+                     class="inline-flex items-center px-3 py-2 bg-rose-600 hover:bg-rose-500 text-white text-sm font-medium rounded-lg transition-colors"
+                     title="Eliminar registro"
+                     onclick="return confirm('¿Seguro que deseas eliminar este registro de progreso?')">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
     {% else %}
-        <p class="text-gray-600 mt-4">No hay registros aún.</p>
+
+
+    <!-- Estado vacío -->
+    <div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-12 text-center">
+      <svg class="w-24 h-24 mx-auto text-gray-500 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+      </svg>
+      <h3 class="text-2xl font-medium text-gray-400 mb-4">No hay registros de progreso</h3>
+      <p class="text-gray-500 mb-8 max-w-md mx-auto">
+        Comienza a seguir el progreso de {{ cliente.nombre }} agregando su primer registro de peso.
+      </p>
+      <a href="{% url 'progreso:nuevo' cliente.id %}" 
+         class="inline-flex items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg transition-colors shadow-lg">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        Agregar Primer Registro
+      </a>
+    </div>
+    
+<!-- Rendimiento -->
+<div class="bg-gray-800 border border-gray-700 rounded-xl p-6 mb-8 shadow-lg">
+  <h3 class="text-xl font-bold text-white mb-4">Resumen de rendimiento</h3>
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+    <div>
+      <p class="text-gray-400 text-sm">Peso promedio levantado</p>
+      <p class="text-2xl font-bold text-white">{{ resumen.rendimiento.peso_prom|floatformat:1|default:"—" }} kg</p>
+    </div>
+    <div>
+      <p class="text-gray-400 text-sm">Repeticiones promedio</p>
+      <p class="text-2xl font-bold text-white">{{ resumen.rendimiento.rep_prom|floatformat:0|default:"—" }}</p>
+    </div>
+    <div>
+      <p class="text-gray-400 text-sm">RPE promedio</p>
+      <p class="text-2xl font-bold text-white">{{ resumen.rendimiento.rpe_prom|floatformat:1|default:"—" }}</p>
+    </div>
+  </div>
+</div>
+<div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 overflow-hidden mt-8">
+  <div class="px-6 py-4 border-b border-gray-700">
+    <h2 class="text-xl font-bold text-white">Historial de rendimiento</h2>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-700">
+      <thead class="bg-blue-700">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase">Fecha</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase">Ejercicio</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase">Peso (kg)</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase">Reps</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase">RPE</th>
+        </tr>
+      </thead>
+      <tbody class="bg-gray-800 divide-y divide-gray-700">
+        {% for e in resumen.progresos_ejercicios %}
+        <tr>
+          <td class="px-6 py-4 text-gray-300">{{ e.fecha }}</td>
+          <td class="px-6 py-4 text-gray-300">{{ e.ejercicio.nombre }}</td>
+          <td class="px-6 py-4 text-gray-300">{{ e.peso|default:"—" }}</td>
+          <td class="px-6 py-4 text-gray-300">{{ e.repeticiones }}</td>
+          <td class="px-6 py-4 text-gray-300">{{ e.rpe|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">No hay progresos de rendimiento.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
     {% endif %}
+  </div>
 </div>
 {% endblock %}

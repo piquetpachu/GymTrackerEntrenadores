@@ -26,6 +26,8 @@ urlpatterns = [
     path("exportaciones/", include("exportaciones.urls")),
     path("usuarios/", include("usuarios.urls")),
     path("", include("dashboard.urls")),
+    path("accounts/", include("allauth.urls")),  # <-- Google login
+
 
 
 

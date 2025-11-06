@@ -2,72 +2,175 @@
 {% block title %}Lista de Ejercicios{% endblock %}
 
 {% block content %}
-<div class="container mt-4 text-light">
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Ejercicios</h2>
-    <a href="{% url 'ejercicios:crear' %}" class="btn btn-success">+ Nuevo ejercicio</a>
-  </div>
+<div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 py-8 px-4">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header y Botón -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-white mb-2">Ejercicios</h1>
+        <p class="text-gray-400">Gestiona tu biblioteca de ejercicios</p>
+      </div>
+      <a href="{% url 'ejercicios:crear' %}" class="inline-flex items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg transition-colors shadow-lg">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+        Nuevo Ejercicio
+      </a>
+    </div>
 
-  <!-- Buscador -->
-  <input
-    type="text"
-    id="buscadorEjercicios"
-    class="form-control mb-3"
-    placeholder="Buscar ejercicio por nombre o descripción..."
-  />
+    <!-- Barra de búsqueda -->
+    <div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-6 mb-8">
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <input
+          type="text"
+          id="buscadorEjercicios"
+          class="block w-full pl-10 pr-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+          placeholder="Buscar ejercicio por nombre o descripción..."
+        />
+      </div>
+    </div>
 
-  <!-- Tabla -->
-  <div class="table-responsive">
-    <table class="table table-dark table-hover align-middle">
-      <thead class="table-primary text-dark">
-        <tr>
-          <th>#</th>
-          <th>Nombre</th>
-          <th>Grupo Muscular</th>
-          <th>Variante</th>
-          <th>Notas</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="tablaEjercicios">
-        {% for ejercicio in ejercicios %}
-        <tr>
-          <td>{{ forloop.counter }}</td>
-          <td>
-            <a href="{% url 'ejercicios:detalle' ejercicio.pk %}" class="text-light text-decoration-none">
-              {{ ejercicio.nombre }}
-            </a>
-          </td>
-          <td>{{ ejercicio.grupo_muscular }}</td>
-          <td>{{ ejercicio.variante }}</td>
-          <td>{{ ejercicio.descripcion|truncatechars:60 }}</td>
-          <td>
-            <div class="btn-group btn-group-sm" role="group">
-              <a href="{% url 'ejercicios:editar' ejercicio.pk %}" class="btn btn-warning">✏️</a>
-              <a href="{% url 'ejercicios:eliminar' ejercicio.pk %}" class="btn btn-danger">🗑️</a>
-            </div>
-          </td>
-        </tr>
-        {% empty %}
-        <tr>
-          <td colspan="4" class="text-center">No hay ejercicios cargados.</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+    <!-- Tabla de ejercicios -->
+    <div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-700">
+        <h2 class="text-xl font-bold text-white">Lista de Ejercicios</h2>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-700">
+          <thead class="bg-emerald-700">
+            <tr>
+              <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Nombre</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Grupo Muscular</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Variante</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Notas</th>
+              <th class="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="bg-gray-800 divide-y divide-gray-700" id="tablaEjercicios">
+            {% for ejercicio in ejercicios %}
+            <tr class="hover:bg-gray-750 transition-colors group {% if ejercicio.visibilidad == 'global' %}border-l-4 border-blue-500 bg-gray-850{% endif %}">
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-300">
+                {{ forloop.counter }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <a href="{% url 'ejercicios:detalle' ejercicio.pk %}" class="inline-flex items-center {% if ejercicio.visibilidad == 'global' %}text-blue-400 hover:text-blue-300{% else %}text-emerald-400 hover:text-emerald-300{% endif %} font-medium transition-colors">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                  {{ ejercicio.nombre }}
+                </a>
+                {% if ejercicio.visibilidad == 'global' %}
+                  <span class="ml-2 text-xs text-blue-400 font-semibold">(Global)</span>
+                {% endif %}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-500 text-white">
+                  {{ ejercicio.grupo_muscular }}
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                {{ ejercicio.variante|default:"-" }}
+              </td>
+              <td class="px-6 py-4">
+                <div class="text-sm text-gray-300 max-w-xs">
+                  {{ ejercicio.descripcion|truncatechars:60|default:"-" }}
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                {% if ejercicio.visibilidad != 'global' %}
+                <div class="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <a href="{% url 'ejercicios:editar' ejercicio.pk %}" class="inline-flex items-center px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white text-sm font-medium rounded-lg transition-colors" title="Editar ejercicio">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  </a>
+                  <a href="{% url 'ejercicios:eliminar' ejercicio.pk %}" class="inline-flex items-center px-3 py-2 bg-rose-600 hover:bg-rose-500 text-white text-sm font-medium rounded-lg transition-colors" title="Eliminar ejercicio">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </a>
+                </div>
+                {% else %}
+                <span class="text-gray-500 text-sm italic">No editable</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="6" class="px-6 py-12 text-center">
+                <div class="text-center">
+                  <svg class="w-16 h-16 mx-auto text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                  </svg>
+                  <h3 class="text-lg font-medium text-gray-400 mb-2">No hay ejercicios cargados</h3>
+                  <p class="text-gray-500">Comienza agregando tu primer ejercicio usando el botón de arriba</p>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
-<!-- Filtro en tiempo real -->
+<!-- Script de filtro -->
 <script>
-document.getElementById("buscadorEjercicios").addEventListener("keyup", function() {
-  const filtro = this.value.toLowerCase();
-  const filas = document.querySelectorAll("#tablaEjercicios tr");
+document.addEventListener('DOMContentLoaded', function() {
+  const buscador = document.getElementById("buscadorEjercicios");
+  
+  if (buscador) {
+    buscador.addEventListener("keyup", function() {
+      const filtro = this.value.toLowerCase();
+      const filas = document.querySelectorAll("#tablaEjercicios tr");
+      let resultadosVisibles = 0;
 
-  filas.forEach(fila => {
-    const texto = fila.textContent.toLowerCase();
-    fila.style.display = texto.includes(filtro) ? "" : "none";
-  });
+      filas.forEach(fila => {
+        if (fila.cells.length === 1) return;
+        const texto = fila.textContent.toLowerCase();
+        if (texto.includes(filtro)) {
+          fila.style.display = "";
+          resultadosVisibles++;
+        } else {
+          fila.style.display = "none";
+        }
+      });
+
+      const tbody = document.getElementById('tablaEjercicios');
+      const mensajeExistente = tbody.querySelector('.mensaje-no-resultados');
+      
+      if (resultadosVisibles === 0) {
+        if (!mensajeExistente) {
+          const filaMensaje = document.createElement('tr');
+          filaMensaje.className = 'mensaje-no-resultados';
+          filaMensaje.innerHTML = `
+            <td colspan="6" class="px-6 py-12 text-center">
+              <div class="text-center">
+                <svg class="w-16 h-16 mx-auto text-gray-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <h3 class="text-lg font-medium text-gray-400 mb-2">No se encontraron ejercicios</h3>
+                <p class="text-gray-500">Intenta con otros términos de búsqueda</p>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(filaMensaje);
+        }
+      } else {
+        if (mensajeExistente) {
+          mensajeExistente.remove();
+        }
+      }
+    });
+  }
 });
 </script>
 {% endblock %}

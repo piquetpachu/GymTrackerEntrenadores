@@ -1,13 +1,87 @@
 {% extends "base.html" %}
 {% block title %}Confirmar Eliminación{% endblock %}
 {% block content %}
-<body>
-    <h1>¿Seguro que quieres eliminar a {{ object.nombre }}?</h1>
-    <form method="post">
+
+<div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 py-8 px-4">
+  <div class="max-w-md mx-auto">
+    <!-- Tarjeta de confirmación -->
+    <div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-8 text-center">
+      <!-- Icono de advertencia -->
+      <div class="mb-6">
+        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-rose-100 bg-opacity-10">
+          <svg class="h-10 w-10 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Mensaje de confirmación -->
+      <h1 class="text-2xl font-bold text-white mb-4">
+        Confirmar Eliminación
+      </h1>
+      
+      <p class="text-gray-300 mb-2">
+        ¿Estás seguro que deseas eliminar a
+      </p>
+      
+      <p class="text-xl font-semibold text-rose-400 mb-6">
+        "{{ object.nombre }}"
+      </p>
+
+      <p class="text-sm text-gray-400 mb-8">
+        Esta acción no se puede deshacer y se perderán todos los datos asociados.
+      </p>
+
+      <!-- Formulario de acciones -->
+      <form method="post" class="space-y-4">
         {% csrf_token %}
-        <button type="submit">Sí, eliminar</button>
-    </form>
-    <a href="{% url 'clientes:lista' %}">Cancelar</a>
-</body>
-</html>
+        
+        <div class="flex flex-col sm:flex-row gap-4">
+          <!-- Botón Eliminar -->
+          <button 
+            type="submit" 
+            class="flex-1 inline-flex justify-center items-center px-6 py-3 bg-rose-600 hover:bg-rose-500 text-white font-medium rounded-lg transition-colors shadow-lg"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+            Sí, Eliminar
+          </button>
+          
+          <!-- Botón Cancelar -->
+          <a 
+            href="{% url 'clientes:lista' %}" 
+            class="flex-1 inline-flex justify-center items-center px-6 py-3 bg-gray-600 hover:bg-gray-500 text-white font-medium rounded-lg transition-colors"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="mt-6 text-center">
+      <p class="text-xs text-gray-500">
+        Al confirmar, todos los datos de {{ object.nombre }} serán eliminados permanentemente del sistema.
+      </p>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Efecto de shake para el botón eliminar al hover */
+  button[type="submit"]:hover {
+    animation: shake 0.5s ease-in-out;
+  }
+  
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+  }
+</style>
+
 {% endblock %}

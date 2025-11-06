@@ -1,15 +1,145 @@
 {% extends "base.html" %}
 {% block title %}Formulario Ejercicio{% endblock %}
 {% block content %}
-<body>
-    <h1>Formulario Ejercicio</h1>
-    <form method="post">
+
+<div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 py-8 px-4">
+  <div class="max-w-2xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold text-white mb-2">
+        {% if form.instance.pk %}
+          Editar Ejercicio
+        {% else %}
+          Crear Nuevo Ejercicio
+        {% endif %}
+      </h1>
+      <p class="text-gray-400">
+        {% if form.instance.pk %}
+          Modifica la información del ejercicio existente
+        {% else %}
+          Agrega un nuevo ejercicio a tu biblioteca
+        {% endif %}
+      </p>
+    </div>
+
+    <!-- Formulario -->
+    <div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-8">
+      <form method="post" class="space-y-6">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Guardar</button>
-    </form>
-    <a href="{% url 'ejercicios:lista' %}">Cancelar</a>
-</body>
-</html>
+        
+        {% for field in form %}
+          <div class="space-y-2">
+            <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-300">
+              {{ field.label }}
+              {% if field.field.required %}
+                <span class="text-rose-500 ml-1">*</span>
+              {% endif %}
+            </label>
+            
+            <div class="relative">
+              {{ field }}
+            </div>
+            
+            {% if field.help_text %}
+              <p class="text-sm text-gray-400">{{ field.help_text }}</p>
+            {% endif %}
+            
+            {% if field.errors %}
+              <div class="text-rose-400 text-sm space-y-1">
+                {% for error in field.errors %}
+                  <p class="flex items-center">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    {{ error }}
+                  </p>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        <!-- Botones de acción -->
+        <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-gray-700">
+          <button 
+            type="submit" 
+            class="flex-1 inline-flex justify-center items-center px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-lg transition-colors shadow-lg"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            {% if form.instance.pk %}
+              Actualizar Ejercicio
+            {% else %}
+              Guardar Ejercicio
+            {% endif %}
+          </button>
+          
+          <a 
+            href="{% url 'ejercicios:lista' %}" 
+            class="flex-1 inline-flex justify-center items-center px-6 py-3 bg-gray-600 hover:bg-gray-500 text-white font-medium rounded-lg transition-colors"
+          >
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+            Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Estilos para los campos del formulario Django */
+  input, textarea, select {
+    @apply w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors;
+  }
+  
+  /* Estilo específico para checkboxes si los hay */
+  input[type="checkbox"] {
+    @apply w-5 h-5 rounded bg-gray-700 border-gray-600 text-emerald-500 focus:ring-emerald-500 focus:ring-2;
+  }
+  
+  /* Estilo para selects múltiples */
+  select[multiple] {
+    @apply h-32;
+  }
+  
+  /* Mejorar la legibilidad de los placeholders */
+  ::placeholder {
+    @apply text-gray-500;
+  }
+  
+  /* Estilo para campos con errores */
+  input:invalid, textarea:invalid, select:invalid {
+    @apply border-rose-500;
+  }
+</style>
+
+<script>
+  // Mejorar la experiencia de los campos de formulario
+  document.addEventListener('DOMContentLoaded', function() {
+    // Agregar clases de error a campos con errores existentes
+    const form = document.querySelector('form');
+    const fields = form.querySelectorAll('input, textarea, select');
+    
+    fields.forEach(field => {
+      // Verificar si el campo tiene errores
+      const fieldContainer = field.closest('.space-y-2');
+      const errors = fieldContainer?.querySelector('.text-rose-400');
+      
+      if (errors) {
+        field.classList.add('border-rose-500', 'focus:ring-rose-500', 'focus:border-rose-500');
+      }
+      
+      // Limpiar estilos de error al enfocar
+      field.addEventListener('focus', function() {
+        this.classList.remove('border-rose-500', 'focus:ring-rose-500', 'focus:border-rose-500');
+        this.classList.add('focus:ring-emerald-500', 'focus:border-transparent');
+      });
+    });
+  });
+</script>
 
 {% endblock %}

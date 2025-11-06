@@ -27,6 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
         'localhost',
+        '10.0.11.228',
     '127.0.0.1', 
     '192.168.101.8',  # ← Tu IP aquí (sin el puerto)
     # También puedes agregar:
@@ -38,12 +39,14 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    # Django
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
     # Apps del proyecto
     "usuarios",
     "clientes",
@@ -53,7 +56,17 @@ INSTALLED_APPS = [
     "exportaciones",
     "analiticas",
     "dashboard",
+
+    # Autenticación con terceros
+    "django.contrib.sites",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "allauth.socialaccount.providers.google",
 ]
+
+SITE_ID = 1
+
 
 AUTH_USER_MODEL = "usuarios.Usuario"
 
@@ -66,6 +79,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
+
 ]
 
 ROOT_URLCONF = 'gymtrack.urls'
@@ -141,6 +156,30 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # settings.py
-LOGIN_URL = '/usuarios/login/'
+LOGIN_URL = '/accounts/login/'  # Página de login personalizada
 LOGIN_REDIRECT_URL = '/'   # A dónde mandar al usuario después de loguearse
 LOGOUT_REDIRECT_URL = '/'  # A dónde mandar al usuario después de hacer logout
+
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",  # Login normal
+    "allauth.account.auth_backends.AuthenticationBackend",  # Login con Google
+)
+
+# Configuración de django-allauth
+ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
+ACCOUNT_LOGIN_METHODS = {"username", "email"}
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/usuarios/login/"
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "APP": {
+            "client_id": "334514863681-7u5nme5a68cgecjpo0o7s7uva2mvcvv2.apps.googleusercontent.com",
+            "secret": "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",
+            "key": "",
+        },
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+    }
+}
