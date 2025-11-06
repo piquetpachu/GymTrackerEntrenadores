@@ -17,34 +17,74 @@
     <form method="POST" action="{% url 'account_signup' %}" class="space-y-6">
       {% csrf_token %}
       
-      {% for field in form %}
-        <div class="space-y-2">
-          <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-300">
-            {{ field.label }}
-            {% if field.field.required %}<span class="text-rose-500 ml-1">*</span>{% endif %}
-          </label>
-          
-          <div class="relative">
-            {{ field }}
-          </div>
-          
-          {% if field.help_text %}
-            <p class="text-sm text-gray-400">{{ field.help_text }}</p>
-          {% endif %}
-          
-          {% if field.errors %}
-            <div class="text-rose-400 text-sm space-y-1">
-              {% for error in field.errors %}
-                <p class="flex items-center">
-                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                  {{ error }}
-                </p>
-              {% endfor %}
-            </div>
-          {% endif %}
+      <!-- Campo de email -->
+      <div class="space-y-2">
+        <label for="id_email" class="block text-sm font-medium text-gray-300">
+          Correo electrónico <span class="text-rose-500 ml-1">*</span>
+        </label>
+        <input type="email" name="email" id="id_email" placeholder="Correo electrónico" 
+               class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
+               required>
+      </div>
+
+      <!-- Campo de nombre de usuario -->
+      <div class="space-y-2">
+        <label for="id_username" class="block text-sm font-medium text-gray-300">
+          Nombre de usuario <span class="text-rose-500 ml-1">*</span>
+        </label>
+        <input type="text" name="username" id="id_username" placeholder="Nombre de usuario" 
+               class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
+               required>
+      </div>
+
+      <!-- Campo de contraseña -->
+      <div class="space-y-2">
+        <label for="id_password1" class="block text-sm font-medium text-gray-300">
+          Contraseña <span class="text-rose-500 ml-1">*</span>
+        </label>
+        <input type="password" name="password1" id="id_password1" placeholder="Contraseña"
+               class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
+               required>
+      </div>
+
+      <!-- Campo de confirmación de contraseña -->
+      <div class="space-y-2">
+        <label for="id_password2" class="block text-sm font-medium text-gray-300">
+          Confirmar contraseña <span class="text-rose-500 ml-1">*</span>
+        </label>
+        <input type="password" name="password2" id="id_password2" placeholder="Confirmar contraseña"
+               class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors"
+               required>
+      </div>
+
+      <!-- Mostrar errores generales -->
+      {% if form.non_field_errors %}
+        <div class="text-rose-400 text-sm space-y-1">
+          {% for error in form.non_field_errors %}
+            <p class="flex items-center">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              {{ error }}
+            </p>
+          {% endfor %}
         </div>
+      {% endif %}
+
+      <!-- Mostrar errores de campos específicos -->
+      {% for field in form %}
+        {% if field.errors %}
+          <div class="text-rose-400 text-sm space-y-1">
+            {% for error in field.errors %}
+              <p class="flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                {{ error }}
+              </p>
+            {% endfor %}
+          </div>
+        {% endif %}
       {% endfor %}
 
       <button type="submit"
@@ -89,26 +129,5 @@
   </div>
 </div>
 
-<style>
-  /* Estilos para los campos del formulario Django */
-  input[type="text"], input[type="password"], input[type="email"] {
-    @apply w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors;
-  }
-  
-  /* Estilo para checkboxes (términos y condiciones) */
-  input[type="checkbox"] {
-    @apply w-4 h-4 rounded bg-gray-700 border-gray-600 text-emerald-500 focus:ring-emerald-500 focus:ring-2;
-  }
-  
-  /* Estilo para labels de checkboxes */
-  .checkbox-label {
-    @apply flex items-center space-x-2 text-sm text-gray-300;
-  }
-  
-  /* Mejorar placeholders */
-  ::placeholder {
-    @apply text-gray-500;
-  }
-</style>
-
+<!-- Eliminamos el style tag ya que usamos clases directas -->
 {% endblock %}

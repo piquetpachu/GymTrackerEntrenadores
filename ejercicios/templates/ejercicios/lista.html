@@ -18,7 +18,7 @@
       </a>
     </div>
 
-    <!-- Barra de búsqueda CORREGIDA -->
+    <!-- Barra de búsqueda -->
     <div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-6 mb-8">
       <div class="relative">
         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -55,17 +55,20 @@
           </thead>
           <tbody class="bg-gray-800 divide-y divide-gray-700" id="tablaEjercicios">
             {% for ejercicio in ejercicios %}
-            <tr class="hover:bg-gray-750 transition-colors group">
+            <tr class="hover:bg-gray-750 transition-colors group {% if ejercicio.visibilidad == 'global' %}border-l-4 border-blue-500 bg-gray-850{% endif %}">
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-300">
                 {{ forloop.counter }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <a href="{% url 'ejercicios:detalle' ejercicio.pk %}" class="inline-flex items-center text-emerald-400 hover:text-emerald-300 font-medium transition-colors">
+                <a href="{% url 'ejercicios:detalle' ejercicio.pk %}" class="inline-flex items-center {% if ejercicio.visibilidad == 'global' %}text-blue-400 hover:text-blue-300{% else %}text-emerald-400 hover:text-emerald-300{% endif %} font-medium transition-colors">
                   <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                   </svg>
                   {{ ejercicio.nombre }}
                 </a>
+                {% if ejercicio.visibilidad == 'global' %}
+                  <span class="ml-2 text-xs text-blue-400 font-semibold">(Global)</span>
+                {% endif %}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-500 text-white">
@@ -81,6 +84,7 @@
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
+                {% if ejercicio.visibilidad != 'global' %}
                 <div class="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <a href="{% url 'ejercicios:editar' ejercicio.pk %}" class="inline-flex items-center px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white text-sm font-medium rounded-lg transition-colors" title="Editar ejercicio">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -93,6 +97,9 @@
                     </svg>
                   </a>
                 </div>
+                {% else %}
+                <span class="text-gray-500 text-sm italic">No editable</span>
+                {% endif %}
               </td>
             </tr>
             {% empty %}
@@ -115,7 +122,7 @@
   </div>
 </div>
 
-<!-- Script de filtro en tiempo real -->
+<!-- Script de filtro -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
   const buscador = document.getElementById("buscadorEjercicios");
@@ -127,9 +134,7 @@ document.addEventListener('DOMContentLoaded', function() {
       let resultadosVisibles = 0;
 
       filas.forEach(fila => {
-        // Excluir la fila de "no hay ejercicios"
         if (fila.cells.length === 1) return;
-        
         const texto = fila.textContent.toLowerCase();
         if (texto.includes(filtro)) {
           fila.style.display = "";
@@ -139,7 +144,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       });
 
-      // Manejar mensaje de "no resultados"
       const tbody = document.getElementById('tablaEjercicios');
       const mensajeExistente = tbody.querySelector('.mensaje-no-resultados');
       
@@ -161,7 +165,6 @@ document.addEventListener('DOMContentLoaded', function() {
           tbody.appendChild(filaMensaje);
         }
       } else {
-        // Remover mensaje si hay resultados
         if (mensajeExistente) {
           mensajeExistente.remove();
         }

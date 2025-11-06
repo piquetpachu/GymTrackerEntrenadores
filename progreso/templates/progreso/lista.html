@@ -2,7 +2,42 @@
 {% block title %}Progreso de {{ cliente.nombre }}{% endblock %}
 
 {% block content %}
+
 <div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 py-8 px-4">
+      <!-- Resumen general -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <!-- Peso actual -->
+  <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-lg text-center">
+    <p class="text-gray-400 text-sm">Peso actual</p>
+    <h2 class="text-2xl font-bold text-white mt-1">
+      {{ resumen.fisico.ultimo_peso|default:"—" }} kg
+    </h2>
+  </div>
+
+  <!-- Peso promedio -->
+  <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-lg text-center">
+    <p class="text-gray-400 text-sm">Peso promedio</p>
+    <h2 class="text-2xl font-bold text-white mt-1">
+      {{ resumen.fisico.peso_promedio|floatformat:1|default:"—" }} kg
+    </h2>
+  </div>
+
+  <!-- Peso máximo -->
+  <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-lg text-center">
+    <p class="text-gray-400 text-sm">Peso máximo</p>
+    <h2 class="text-2xl font-bold text-white mt-1">
+      {{ resumen.fisico.peso_max|default:"—" }} kg
+    </h2>
+  </div>
+
+  <!-- Peso mínimo -->
+  <div class="bg-gray-800 border border-gray-700 rounded-xl p-4 shadow-lg text-center">
+    <p class="text-gray-400 text-sm">Peso mínimo</p>
+    <h2 class="text-2xl font-bold text-white mt-1">
+      {{ resumen.fisico.peso_min|default:"—" }} kg
+    </h2>
+  </div>
+</div>
   <div class="max-w-6xl mx-auto">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
@@ -114,6 +149,8 @@
       </div>
     </div>
     {% else %}
+
+
     <!-- Estado vacío -->
     <div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-12 text-center">
       <svg class="w-24 h-24 mx-auto text-gray-500 mb-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -131,6 +168,57 @@
         Agregar Primer Registro
       </a>
     </div>
+    
+<!-- Rendimiento -->
+<div class="bg-gray-800 border border-gray-700 rounded-xl p-6 mb-8 shadow-lg">
+  <h3 class="text-xl font-bold text-white mb-4">Resumen de rendimiento</h3>
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+    <div>
+      <p class="text-gray-400 text-sm">Peso promedio levantado</p>
+      <p class="text-2xl font-bold text-white">{{ resumen.rendimiento.peso_prom|floatformat:1|default:"—" }} kg</p>
+    </div>
+    <div>
+      <p class="text-gray-400 text-sm">Repeticiones promedio</p>
+      <p class="text-2xl font-bold text-white">{{ resumen.rendimiento.rep_prom|floatformat:0|default:"—" }}</p>
+    </div>
+    <div>
+      <p class="text-gray-400 text-sm">RPE promedio</p>
+      <p class="text-2xl font-bold text-white">{{ resumen.rendimiento.rpe_prom|floatformat:1|default:"—" }}</p>
+    </div>
+  </div>
+</div>
+<div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 overflow-hidden mt-8">
+  <div class="px-6 py-4 border-b border-gray-700">
+    <h2 class="text-xl font-bold text-white">Historial de rendimiento</h2>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-700">
+      <thead class="bg-blue-700">
+        <tr>
+          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase">Fecha</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase">Ejercicio</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase">Peso (kg)</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase">Reps</th>
+          <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase">RPE</th>
+        </tr>
+      </thead>
+      <tbody class="bg-gray-800 divide-y divide-gray-700">
+        {% for e in resumen.progresos_ejercicios %}
+        <tr>
+          <td class="px-6 py-4 text-gray-300">{{ e.fecha }}</td>
+          <td class="px-6 py-4 text-gray-300">{{ e.ejercicio.nombre }}</td>
+          <td class="px-6 py-4 text-gray-300">{{ e.peso|default:"—" }}</td>
+          <td class="px-6 py-4 text-gray-300">{{ e.repeticiones }}</td>
+          <td class="px-6 py-4 text-gray-300">{{ e.rpe|default:"—" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">No hay progresos de rendimiento.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
     {% endif %}
   </div>
 </div>

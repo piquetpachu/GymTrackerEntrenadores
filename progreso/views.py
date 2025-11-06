@@ -4,6 +4,7 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.utils.timezone import now
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Avg, Max, Min
 
 from .models import Progreso, ProgresoEjercicio
 from ejercicios.models import Ejercicio
@@ -26,23 +27,49 @@ class ProgresoListaView(LoginRequiredCustomMixin, RolRequiredMixin, EntrenadorQu
     model = Progreso
     template_name = "progreso/lista.html"
     context_object_name = "progresos"
-    rol_permitido = "entrenador"  # 👈 solo entrenadores
+    rol_permitido = "entrenador"
 
     def get_queryset(self):
         user = self.request.user
         cliente = get_object_or_404(Cliente, pk=self.kwargs["cliente_id"])
-        
-        # 🔒 Seguridad: verificamos que el cliente pertenece al entrenador logueado
+
+        # Seguridad: el cliente debe pertenecer al entrenador logueado
         if not cliente.entrenadores.filter(id=user.id).exists():
             return Progreso.objects.none()
-        
-        return Progreso.objects.filter(cliente=cliente)
+
+        return Progreso.objects.filter(cliente=cliente).order_by("-fecha")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["cliente"] = get_object_or_404(Cliente, pk=self.kwargs["cliente_id"])
-        return context
+        cliente = get_object_or_404(Cliente, pk=self.kwargs["cliente_id"])
+        context["cliente"] = cliente
 
+        progresos = context["progresos"]
+        progresos_ejercicios = ProgresoEjercicio.objects.filter(cliente=cliente).order_by("-fecha")
+
+        # --- Resumen físico ---
+        ultimo = progresos.first()
+        resumen_fisico = {
+            "ultimo_peso": ultimo.peso_kg if ultimo else None,
+            "peso_promedio": progresos.aggregate(Avg("peso_kg"))["peso_kg__avg"],
+            "peso_max": progresos.aggregate(Max("peso_kg"))["peso_kg__max"],
+            "peso_min": progresos.aggregate(Min("peso_kg"))["peso_kg__min"],
+        }
+
+        # --- Resumen rendimiento ---
+        resumen_rendimiento = progresos_ejercicios.aggregate(
+            peso_prom=Avg("peso"),
+            rep_prom=Avg("repeticiones"),
+            rpe_prom=Avg("rpe"),
+        )
+
+        context["resumen"] = {
+            "fisico": resumen_fisico,
+            "rendimiento": resumen_rendimiento,
+            "progresos_ejercicios": progresos_ejercicios
+        }
+
+        return context
 class ProgresoCrearView(CreateView):
     model = Progreso
     form_class = ProgresoForm
@@ -305,3 +332,4 @@ def duplicar_progreso_ejercicio(request, cliente_id, pk):
     )
     messages.success(request, "Progreso duplicado correctamente.")
     return redirect("progreso:registrar", cliente_id=progreso.cliente.id, ejercicio_id=progreso.ejercicio.id)
+

@@ -11,6 +11,12 @@ class RutinaListaView(ListView):
     template_name = "rutinas/lista.html"
     context_object_name = "rutinas"
 
+    def get_queryset(self):
+        user = self.request.user
+        # Mostrar solo las rutinas de clientes que estén asociados al entrenador logueado
+        return Rutina.objects.filter(cliente__entrenadores=user)
+    
+
 class RutinaDetalleView(DetailView):
     model = Rutina
     template_name = "rutinas/detalle.html"
@@ -21,6 +27,13 @@ class RutinaCrearView(CreateView):
     form_class = RutinaForm
     template_name = "rutinas/formulario.html"
     success_url = reverse_lazy("rutinas:lista")
+
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        # Filtra los clientes disponibles en el formulario
+        form.fields["cliente"].queryset = Cliente.objects.filter(entrenadores=self.request.user)
+        return form
+
 
 class RutinaEditarView(UpdateView):
     model = Rutina
