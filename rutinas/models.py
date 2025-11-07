@@ -5,14 +5,39 @@ from django.db import models
 from clientes.models import Cliente
 from ejercicios.models import Ejercicio
 
+from django.db import models
+from clientes.models import Cliente
+from ejercicios.models import Ejercicio
+from usuarios.models import Usuario
+
 class Rutina(models.Model):
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name="rutinas")
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField(blank=True)
-    fecha_creacion = models.DateField(auto_now_add=True)
+    ejercicios = models.ManyToManyField(Ejercicio, related_name="rutinas")
+
+    # 🔹 entrenador que la creó (opcional)
+    entrenador = models.ForeignKey(
+        Usuario,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="rutinas_creadas"
+    )
+
+    # 🔹 cliente asignado (opcional)
+    cliente = models.ForeignKey(
+        Cliente,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="rutinas"
+    )
+
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.nombre} - {self.cliente.nombre}"
+        return f"{self.nombre} ({self.cliente or 'Sin cliente'})"
+
 
 class EntradaEjercicio(models.Model):
     rutina = models.ForeignKey(Rutina, on_delete=models.CASCADE, related_name="entradas")

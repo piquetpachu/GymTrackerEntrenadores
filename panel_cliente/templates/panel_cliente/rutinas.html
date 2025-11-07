@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Mis Rutinas{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 py-8 px-4">
+  <div class="max-w-5xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6 text-center text-emerald-400">🏋️‍♂️ Mis Rutinas</h1>
+
+    {% if rutinas %}
+      <div class="grid gap-6">
+        {% for rutina in rutinas %}
+        <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow-md">
+          <h2 class="text-xl font-semibold text-emerald-300">{{ rutina.nombre }}</h2>
+          <p class="text-gray-400">{{ rutina.descripcion|default:"Sin descripción" }}</p>
+          <p class="text-gray-400 mt-1">Ejercicios: {{ rutina.ejercicios.count }}</p>
+          <a href="{% url 'rutinas:detalle' rutina.id %}" class="inline-block mt-3 text-sm text-emerald-400 hover:underline">
+            Ver rutina completa →
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-gray-400 text-center">No tienes rutinas asignadas aún.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
