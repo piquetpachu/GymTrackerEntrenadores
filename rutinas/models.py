@@ -10,12 +10,12 @@ from clientes.models import Cliente
 from ejercicios.models import Ejercicio
 from usuarios.models import Usuario
 
+
 class Rutina(models.Model):
     nombre = models.CharField(max_length=100)
     descripcion = models.TextField(blank=True)
     ejercicios = models.ManyToManyField(Ejercicio, related_name="rutinas")
 
-    # 🔹 entrenador que la creó (opcional)
     entrenador = models.ForeignKey(
         Usuario,
         on_delete=models.SET_NULL,
@@ -24,7 +24,6 @@ class Rutina(models.Model):
         related_name="rutinas_creadas"
     )
 
-    # 🔹 cliente asignado (opcional)
     cliente = models.ForeignKey(
         Cliente,
         on_delete=models.CASCADE,

@@ -4,23 +4,45 @@
 {% block content %}
 <div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 py-8 px-4">
   <div class="max-w-5xl mx-auto">
-    <h1 class="text-3xl font-bold mb-6 text-center text-emerald-400">🏋️‍♂️ Mis Rutinas</h1>
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold text-emerald-400">🏋️‍♂️ Mis Rutinas</h1>
+      <a href="{% url 'panel_cliente:crear_rutina' %}"
+         class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-4 py-2 rounded-lg shadow-md transition">
+         ➕ Nueva rutina
+      </a>
+    </div>
 
     {% if rutinas %}
-      <div class="grid gap-6">
+      <div class="grid md:grid-cols-2 gap-6">
         {% for rutina in rutinas %}
-        <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 shadow-md">
-          <h2 class="text-xl font-semibold text-emerald-300">{{ rutina.nombre }}</h2>
-          <p class="text-gray-400">{{ rutina.descripcion|default:"Sin descripción" }}</p>
-          <p class="text-gray-400 mt-1">Ejercicios: {{ rutina.ejercicios.count }}</p>
-          <a href="{% url 'rutinas:detalle' rutina.id %}" class="inline-block mt-3 text-sm text-emerald-400 hover:underline">
-            Ver rutina completa →
-          </a>
+        <div class="bg-gray-800 rounded-xl border border-gray-700 p-5 shadow-lg flex flex-col justify-between">
+          <div>
+            <h2 class="text-xl font-semibold text-emerald-300 mb-1">{{ rutina.nombre }}</h2>
+            <p class="text-gray-400 text-sm mb-4">{{ rutina.descripcion|default:"Sin descripción" }}</p>
+            <p class="text-gray-400 text-sm">Ejercicios: {{ rutina.ejercicios.count }}</p>
+            <p class="text-gray-500 text-xs mt-1">Creada el {{ rutina.fecha_creacion|date:"d/m/Y" }}</p>
+          </div>
+
+          <div class="flex gap-2 mt-4">
+            <a href="{% url 'panel_cliente:detalle_rutina' rutina.id %}"
+               class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white py-1.5 rounded transition">👁️ Ver</a>
+
+            <a href="{% url 'panel_cliente:editar_rutina' rutina.id %}"
+               class="flex-1 text-center bg-yellow-500 hover:bg-yellow-600 text-white py-1.5 rounded transition">✏️ Editar</a>
+
+            <a href="{% url 'panel_cliente:eliminar_rutina' rutina.id %}"
+               class="flex-1 text-center bg-red-600 hover:bg-red-700 text-white py-1.5 rounded transition">🗑️ Eliminar</a>
+          </div>
         </div>
         {% endfor %}
       </div>
     {% else %}
-      <p class="text-gray-400 text-center">No tienes rutinas asignadas aún.</p>
+      <div class="bg-gray-800 border border-gray-700 rounded-xl p-6 text-center text-gray-400">
+        <p class="text-lg mb-3">Aún no tienes rutinas creadas.</p>
+        <a href="{% url 'panel_cliente:crear_rutina' %}" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg">
+          ➕ Crear tu primera rutina
+        </a>
+      </div>
     {% endif %}
   </div>
 </div>

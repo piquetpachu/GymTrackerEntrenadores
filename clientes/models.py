@@ -6,12 +6,11 @@ class Cliente(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name="perfil_cliente",
-        null=True,
-        blank=True
+        null=True, blank=True
     )
     entrenadores = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name="clientes_asignados",
+        settings.AUTH_USER_MODEL, 
+        related_name="clientes",
         blank=True
     )
     nombre = models.CharField(max_length=100)
@@ -21,4 +20,4 @@ class Cliente(models.Model):
     lesiones = models.TextField(blank=True, help_text="Anotar lesiones o complicaciones")
 
     def __str__(self):
-        return self.nombre or (self.usuario.username if self.usuario else "Cliente sin usuario")
+        return self.nombre
