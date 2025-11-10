@@ -77,6 +77,7 @@
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
+                {% if user == rutina.cliente.usuario or user.rol == "entrenador" %}
                 <div class="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
                   <a href="{% url 'rutinas:editar' rutina.pk %}" class="inline-flex items-center px-3 py-2 bg-amber-600 hover:bg-amber-500 text-white text-sm font-medium rounded-lg transition-colors" title="Editar rutina">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,6 +90,7 @@
                     </svg>
                   </a>
                 </div>
+                {% endif %}
               </td>
             </tr>
             {% empty %}

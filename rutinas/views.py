@@ -10,12 +10,15 @@ class RutinaListaView(ListView):
     model = Rutina
     template_name = "rutinas/lista.html"
     context_object_name = "rutinas"
-
     def get_queryset(self):
         user = self.request.user
-        # Mostrar solo las rutinas de clientes que estén asociados al entrenador logueado
-        return Rutina.objects.filter(cliente__entrenadores=user)
-    
+
+        # Si es CLIENTE, muestra solo sus rutinas
+        if hasattr(user, "perfil_cliente"):
+            return Rutina.objects.filter(cliente=user.perfil_cliente)
+
+        # Si es ENTRENADOR, muestra solo las rutinas de sus clientes
+        return Rutina.objects.filter(cliente__entrenadores=user).distinct()
 
 class RutinaDetalleView(DetailView):
     model = Rutina
@@ -28,11 +31,23 @@ class RutinaCrearView(CreateView):
     template_name = "rutinas/formulario.html"
     success_url = reverse_lazy("rutinas:lista")
 
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        # Filtra los clientes disponibles en el formulario
-        form.fields["cliente"].queryset = Cliente.objects.filter(entrenadores=self.request.user)
-        return form
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user  # 👈 pasamos el usuario al form
+        return kwargs
+
+    def form_valid(self, form):
+        rutina = form.save(commit=False)
+
+        # Si el usuario es cliente, asignamos automáticamente su perfil
+        if hasattr(self.request.user, 'perfil_cliente'):
+            rutina.cliente = self.request.user.perfil_cliente
+        else:
+            # Si es entrenador, el cliente ya fue elegido en el formulario
+            rutina.cliente = form.cleaned_data['cliente']
+
+        rutina.save()
+        return super().form_valid(form)
 
 
 class RutinaEditarView(UpdateView):

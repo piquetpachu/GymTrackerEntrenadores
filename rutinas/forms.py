@@ -1,6 +1,7 @@
 from django import forms
 from .models import Rutina, EntradaEjercicio
 
+
 class RutinaForm(forms.ModelForm):
     class Meta:
         model = Rutina
@@ -19,14 +20,20 @@ class RutinaForm(forms.ModelForm):
                 "placeholder": "Descripción y objetivos de la rutina"
             }),
         }
-    
+
     def __init__(self, *args, **kwargs):
+        # 👇 Capturamos el usuario actual
+        user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
-        # Mejorar labels
+
+        # Etiquetas
         self.fields['cliente'].label = "Cliente *"
         self.fields['nombre'].label = "Nombre de la Rutina *"
         self.fields['descripcion'].label = "Descripción"
 
+        # 👇 Si el usuario es cliente, eliminamos el campo del formulario
+        if user and hasattr(user, 'rol') and user.rol == 'cliente':
+            self.fields.pop('cliente', None)
 class EntradaEjercicioForm(forms.ModelForm):
     class Meta:
         model = EntradaEjercicio

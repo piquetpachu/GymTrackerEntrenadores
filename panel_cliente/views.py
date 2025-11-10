@@ -26,11 +26,12 @@ def mis_rutinas(request):
         return redirect("home")
 
     cliente = request.user.perfil_cliente
-    rutinas = cliente.rutinas.all()
-  # suponiendo que la relación ya existe
+    rutinas = Rutina.objects.filter(cliente=cliente)
 
-    return render(request, "panel_cliente/rutinas.html", {"rutinas": rutinas, "cliente": cliente})
-
+    return render(request, "rutinas/rutinas.html", {
+        "rutinas": rutinas,
+        "modo_cliente": True,  # se usa para personalizar el template
+    })
 
 @login_required
 def registrar_progreso_cliente(request, ejercicio_id):
