@@ -1,13 +1,101 @@
 {% extends "base.html" %}
-{% block title %}Eliminar Rutina{% endblock %}
+{% block title %}Eliminar Rutina - GymTrack{% endblock %}
 {% block content %}
-<body>
-    <h1>¿Seguro que quieres eliminar la rutina {{ object.nombre }}?</h1>
-    <form method="post">{% csrf_token %}
-        <button type="submit">Sí, eliminar</button>
-    </form>
-    <a href="{% url 'rutinas:lista' %}">Cancelar</a>
-</body>
-</html>
+<div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 py-8 px-4 flex items-center justify-center">
+  <div class="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-8 w-full max-w-md">
+    <!-- Icono de advertencia -->
+    <div class="text-center mb-6">
+      <div class="flex justify-center mb-4">
+        <div class="w-20 h-20 bg-gradient-to-br from-rose-500 to-red-600 rounded-2xl flex items-center justify-center shadow-lg">
+          <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+        </div>
+      </div>
+      
+      <h1 class="text-2xl font-bold text-white mb-3">Eliminar Rutina</h1>
+      
+      <div class="bg-gray-750 rounded-xl p-4 border border-rose-500/30 mb-6">
+        <p class="text-gray-300 text-lg font-medium mb-2">{{ object.nombre }}</p>
+        <p class="text-rose-400 text-sm">¿Estás seguro de que quieres eliminar esta rutina?</p>
+      </div>
+      
+      <p class="text-gray-400 text-sm mb-6">
+        Esta acción no se puede deshacer. Se eliminarán todos los datos asociados a esta rutina permanentemente.
+      </p>
+    </div>
 
-    {% endblock %}
+    <!-- Formulario de eliminación -->
+    <form method="post" class="space-y-4">
+      {% csrf_token %}
+      
+      <div class="flex flex-col sm:flex-row gap-3">
+        <!-- Botón de eliminar -->
+        <button type="submit" 
+          class="flex-1 inline-flex justify-center items-center px-6 py-3 bg-gradient-to-r from-rose-600 to-red-600 hover:from-rose-500 hover:to-red-500 text-white font-medium rounded-xl transition-all duration-300 shadow-lg transform hover:-translate-y-0.5 hover:shadow-rose-500/20">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+          </svg>
+          Sí, eliminar
+        </button>
+        
+        <!-- Botón de cancelar -->
+        <a href="{% url 'rutinas:lista' %}" 
+          class="flex-1 inline-flex justify-center items-center px-6 py-3 bg-gray-700 hover:bg-gray-600 text-gray-300 font-medium rounded-xl transition-all duration-300 shadow-lg transform hover:-translate-y-0.5 border border-gray-600">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+          Cancelar
+        </a>
+      </div>
+    </form>
+
+    <!-- Información adicional -->
+    <div class="mt-6 pt-4 border-t border-gray-700">
+      <div class="flex items-center justify-center space-x-2 text-gray-500 text-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.35 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+        </svg>
+        <span>Esta acción es permanente</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Estilos personalizados */
+  .bg-gray-750 {
+    background-color: #2d3748;
+  }
+  
+  /* Animaciones suaves */
+  button, a {
+    transition: all 0.3s ease;
+  }
+  
+  /* Efecto de pulso en el icono de advertencia */
+  @keyframes pulse-warning {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  
+  .bg-gradient-to-br.from-rose-500.to-red-600 {
+    animation: pulse-warning 2s infinite;
+  }
+</style>
+
+<script>
+  // Efecto de confirmación adicional
+  document.addEventListener('DOMContentLoaded', function() {
+    const deleteButton = document.querySelector('button[type="submit"]');
+    
+    deleteButton.addEventListener('click', function(e) {
+      const confirmed = confirm('¿Estás completamente seguro de que quieres eliminar la rutina "{{ object.nombre }}"? Esta acción no se puede deshacer.');
+      
+      if (!confirmed) {
+        e.preventDefault();
+      }
+    });
+  });
+</script>
+{% endblock %}

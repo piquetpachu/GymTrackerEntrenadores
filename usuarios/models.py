@@ -8,7 +8,8 @@ class Usuario(AbstractUser):
         ("cliente", "Cliente"),
     ]
     
-    rol = models.CharField(max_length=20, choices=ROLES, default="cliente")
+    # Por defecto al registrar un usuario será 'entrenador' (temporal)
+    rol = models.CharField(max_length=20, choices=ROLES, default="entrenador")
 
     def __str__(self):
         return f"{self.username} ({self.rol})"

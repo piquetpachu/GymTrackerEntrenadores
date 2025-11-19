@@ -22,4 +22,8 @@ urlpatterns = [
         template_name="clientes/confirmar_eliminar.html",
         success_url=reverse_lazy("clientes:lista")
     ), name="eliminar"),
+    path("buscar/", views.buscar_clientes, name="buscar"),
+    path("asignar/<int:cliente_id>/", views.asignar_cliente, name="asignar"),
+    path("desasignar/<int:cliente_id>/", views.desasignar_cliente, name="desasignar"),
+    
 ]
