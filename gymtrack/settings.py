@@ -29,7 +29,7 @@ ALLOWED_HOSTS = [
         'localhost',
         '10.0.11.228',
     '127.0.0.1', 
-    '192.168.101.8',  # ← Tu IP aquí (sin el puerto)
+    '192.168.101.11',  # ← Tu IP aquí (sin el puerto)
     # También puedes agregar:
     '.localhost',
     '0.0.0.0',
@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "clientes",
     "ejercicios",
     "rutinas",
+    "panel_cliente",
     "progreso",
     "exportaciones",
     "analiticas",

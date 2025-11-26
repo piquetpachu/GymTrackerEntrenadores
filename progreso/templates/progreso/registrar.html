@@ -2,7 +2,38 @@
 {% block title %}Registrar Progreso - {{ ejercicio.nombre }}{% endblock %}
 
 {% block content %}
+
 <div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 py-8 px-4">
+  <!-- Anotaciones del Coach -->
+<div class="bg-gray-800 border border-gray-700 rounded-xl p-4 mb-6">
+  <button 
+    type="button"
+    class="w-full flex justify-between items-center text-left text-emerald-400 font-semibold text-lg"
+    onclick="toggleAnotaciones()"
+  >
+    <span>Anotaciones del Coach</span>
+    <svg id="iconAnotaciones" class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+    </svg>
+  </button>
+  
+  <div id="anotacionesCoach" class="mt-4 hidden space-y-2 text-gray-300">
+    <p><strong>Descanso recomendado:</strong> {{ ejercicio.descanso|default:"90 segundos" }}</p>
+    <p><strong>RIR sugerido:</strong> {{ ultimo_progreso.rir|default:"2" }}</p>
+    <p><strong>RPE sugerido:</strong> {{ ultimo_progreso.rpe|default:"8" }}</p>
+  </div>
+</div>
+<!-- Contador de descanso -->
+<div class="bg-gray-800 border border-gray-700 rounded-xl p-6 mt-6 text-center">
+  <h3 class="text-xl font-semibold text-white mb-4">⏱️ Temporizador de Descanso</h3>
+  <div class="text-4xl font-bold text-emerald-400 mb-4" id="contadorDescanso">00:00</div>
+  <div class="flex justify-center gap-4">
+    <button onclick="iniciarDescanso()" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-lg text-white font-medium">Iniciar</button>
+    <button onclick="pausarDescanso()" class="px-5 py-2 bg-amber-600 hover:bg-amber-500 rounded-lg text-white font-medium">Pausar</button>
+    <button onclick="reiniciarDescanso()" class="px-5 py-2 bg-rose-600 hover:bg-rose-500 rounded-lg text-white font-medium">Reiniciar</button>
+  </div>
+</div>
+
   <div class="max-w-6xl mx-auto">
     <!-- Encabezado -->
     <div class="mb-8">
@@ -344,5 +375,44 @@
       }
     }
   });
+
+  function toggleAnotaciones() {
+  const box = document.getElementById("anotacionesCoach");
+  const icon = document.getElementById("iconAnotaciones");
+  box.classList.toggle("hidden");
+  icon.classList.toggle("rotate-180");
+}
+
+let descansoSegundos = 0;
+let descansoInterval = null;
+
+function actualizarDisplay() {
+  const minutos = String(Math.floor(descansoSegundos / 60)).padStart(2, "0");
+  const segundos = String(descansoSegundos % 60).padStart(2, "0");
+  document.getElementById("contadorDescanso").textContent = `${minutos}:${segundos}`;
+}
+
+function iniciarDescanso() {
+  if (descansoInterval) return; // evitar duplicar intervalos
+  descansoInterval = setInterval(() => {
+    descansoSegundos++;
+    actualizarDisplay();
+  }, 1000);
+}
+
+function pausarDescanso() {
+  clearInterval(descansoInterval);
+  descansoInterval = null;
+}
+
+function reiniciarDescanso() {
+  descansoSegundos = 0;
+  actualizarDisplay();
+  pausarDescanso();
+}
+
+actualizarDisplay();
+
+
 </script>
 {% endblock %}

@@ -14,6 +14,15 @@ from usuarios.mixins import LoginRequiredCustomMixin, RolRequiredMixin, Entrenad
 
 from django.utils.timezone import localdate
 
+
+def _user_allowed_for_cliente(user, cliente: Cliente) -> bool:
+    """Retorna True si `user` es superuser, entrenador asignado al cliente, o el propio cliente."""
+    if user.is_superuser:
+        return True
+    if cliente.usuario and cliente.usuario.id == getattr(user, "id", None):
+        return True
+    return cliente.entrenadores.filter(id=user.id).exists()
+
 @login_required
 def index(request):
     if request.user.is_superuser:
@@ -96,6 +105,11 @@ class ProgresoEditarView(UpdateView):
     def get_success_url(self):
         return reverse_lazy("progreso:lista", kwargs={"cliente_id": self.object.cliente.id})
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["cliente_id"] = self.object.cliente.id  # ✅ Agregado
+        return context
+
 
 class ProgresoEliminarView(DeleteView):
     model = Progreso
@@ -108,8 +122,8 @@ class ProgresoEliminarView(DeleteView):
 def lista_progresos_ejercicios(request, cliente_id):
     cliente = get_object_or_404(Cliente, pk=cliente_id)
 
-    # seguridad: sólo entrenadores del cliente (o superuser) pueden acceder
-    if not request.user.is_superuser and not cliente.entrenadores.filter(id=request.user.id).exists():
+    # seguridad: superuser, entrenadores asignados o el propio cliente
+    if not _user_allowed_for_cliente(request.user, cliente):
         return redirect("clientes:lista")
 
     progresos = ProgresoEjercicio.objects.filter(cliente=cliente).order_by("-fecha")
@@ -123,7 +137,7 @@ def crear_progreso_ejercicio(request, cliente_id):
     cliente = get_object_or_404(Cliente, pk=cliente_id)
 
     # seguridad
-    if not request.user.is_superuser and not cliente.entrenadores.filter(id=request.user.id).exists():
+    if not _user_allowed_for_cliente(request.user, cliente):
         return redirect("clientes:lista")
 
     if request.method == "POST":
@@ -145,7 +159,7 @@ def editar_progreso_ejercicio(request, cliente_id, pk):
     progreso = get_object_or_404(ProgresoEjercicio, pk=pk, cliente=cliente)
 
     # seguridad
-    if not request.user.is_superuser and not cliente.entrenadores.filter(id=request.user.id).exists():
+    if not _user_allowed_for_cliente(request.user, cliente):
         return redirect("clientes:lista")
 
     if request.method == "POST":
@@ -186,8 +200,8 @@ def eliminar_progreso_desde_registrar(request, cliente_id, pk, ejercicio_id):
     cliente = get_object_or_404(Cliente, pk=cliente_id)
     progreso = get_object_or_404(ProgresoEjercicio, pk=pk, cliente=cliente)
 
-    # Seguridad: sólo entrenadores del cliente o superusuarios
-    if not request.user.is_superuser and not cliente.entrenadores.filter(id=request.user.id).exists():
+    # Seguridad: superuser, entrenadores asignados o el propio cliente
+    if not _user_allowed_for_cliente(request.user, cliente):
         return redirect("clientes:lista")
 
     if request.method == "POST":
@@ -319,7 +333,7 @@ def duplicar_progreso_ejercicio(request, cliente_id, pk):
     progreso = get_object_or_404(ProgresoEjercicio, pk=pk, cliente=cliente)
 
     # seguridad
-    if not request.user.is_superuser and not cliente.entrenadores.filter(id=request.user.id).exists():
+    if not _user_allowed_for_cliente(request.user, cliente):
         return redirect("clientes:lista")
 
     nuevo_progreso = ProgresoEjercicio.objects.create(

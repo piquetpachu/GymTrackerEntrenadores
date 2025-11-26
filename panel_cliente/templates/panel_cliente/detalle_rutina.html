@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Detalle de Rutina{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 py-8 px-4">
+  <div class="max-w-4xl mx-auto bg-gray-800 p-6 rounded-xl border border-gray-700 shadow-lg">
+    <h1 class="text-3xl font-bold text-emerald-400 mb-4">{{ rutina.nombre }}</h1>
+    <p class="text-gray-400 mb-6">{{ rutina.descripcion|default:"Sin descripción" }}</p>
+
+    <h2 class="text-xl font-semibold text-emerald-300 mb-2">Ejercicios incluidos:</h2>
+    {% if ejercicios %}
+      <ul class="space-y-1">
+        {% for e in ejercicios %}
+          <li class="bg-gray-700 px-3 py-2 rounded">{{ e.nombre }}</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-gray-400">No hay ejercicios en esta rutina.</p>
+    {% endif %}
+
+    <div class="flex gap-4 mt-6">
+      <a href="{% url 'panel_cliente:editar_rutina' rutina.id %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">Editar</a>
+      <a href="{% url 'panel_cliente:eliminar_rutina' rutina.id %}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">Eliminar</a>
+      <a href="{% url 'panel_cliente:rutinas' %}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded">Volver</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

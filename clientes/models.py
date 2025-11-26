@@ -1,11 +1,18 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
 from django.conf import settings
 
 class Cliente(models.Model):
-    entrenadores = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="clientes")
+    usuario = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="perfil_cliente",
+        null=True, blank=True
+    )
+    entrenadores = models.ManyToManyField(
+        settings.AUTH_USER_MODEL, 
+        related_name="clientes",
+        blank=True
+    )
     nombre = models.CharField(max_length=100)
     edad = models.PositiveIntegerField(null=True, blank=True)
     altura_cm = models.PositiveIntegerField(null=True, blank=True)

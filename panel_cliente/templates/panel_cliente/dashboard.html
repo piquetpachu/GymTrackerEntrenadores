@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Panel del Cliente{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-100 py-8 px-4">
+  <div class="max-w-5xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6 text-center text-emerald-400">👤 Bienvenido, {{ cliente.nombre }}</h1>
+
+    <!-- Información del cliente -->
+    <div class="bg-gray-800 rounded-xl p-6 shadow-lg mb-8 border border-gray-700">
+      <h2 class="text-xl font-semibold mb-4 text-emerald-300">Tu información</h2>
+      <ul class="space-y-1 text-gray-300">
+        <li><strong>Edad:</strong> {{ cliente.edad|default:"-" }}</li>
+        <li><strong>Altura:</strong> {{ cliente.altura_cm|default:"-" }} cm</li>
+        <li><strong>Peso actual:</strong> {{ cliente.peso_kg|default:"-" }} kg</li>
+        <li><strong>Lesiones:</strong> {{ cliente.lesiones|default:"Ninguna" }}</li>
+      </ul>
+    </div>
+
+    <!-- Últimos progresos -->
+    <div class="bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-700">
+      <h2 class="text-xl font-semibold mb-4 text-emerald-300">Tus últimos progresos</h2>
+
+      {% if progresos_recientes %}
+      <table class="min-w-full divide-y divide-gray-700">
+        <thead class="bg-gray-700">
+          <tr>
+            <th class="px-4 py-2 text-left">Ejercicio</th>
+            <th class="px-4 py-2 text-left">Peso (kg)</th>
+            <th class="px-4 py-2 text-left">Reps</th>
+            <th class="px-4 py-2 text-left">Fecha</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-700">
+          {% for p in progresos_recientes %}
+          <tr>
+            <td class="px-4 py-2">{{ p.ejercicio.nombre }}</td>
+            <td class="px-4 py-2">{{ p.peso }}</td>
+            <td class="px-4 py-2">{{ p.repeticiones }}</td>
+            <td class="px-4 py-2">{{ p.fecha|date:"d/m/Y" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="text-gray-400">Aún no registraste ningún progreso.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

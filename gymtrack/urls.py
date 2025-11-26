@@ -27,6 +27,7 @@ urlpatterns = [
     path("usuarios/", include("usuarios.urls")),
     path("", include("dashboard.urls")),
     path("accounts/", include("allauth.urls")),  # <-- Google login
+    path("cliente/", include("panel_cliente.urls")),
 
 
 

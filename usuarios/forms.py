@@ -6,4 +6,5 @@ from .models import Usuario
 class RegistroForm(UserCreationForm):
     class Meta:
         model = Usuario
-        fields = ["username", "email", "rol", "password1", "password2"]
+        # No mostramos 'rol' en el formulario de registro; el modelo usa 'entrenador' por defecto
+        fields = ["username", "email", "password1", "password2"]
