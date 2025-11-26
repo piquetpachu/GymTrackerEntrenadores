@@ -7,6 +7,7 @@ from usuarios.mixins import LoginRequiredCustomMixin, RolRequiredMixin, Entrenad
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect,render
 from django.contrib import messages
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 class ClienteListaView(LoginRequiredCustomMixin, RolRequiredMixin, EntrenadorQuerysetMixin, ListView):
     model = Cliente
@@ -32,49 +33,78 @@ class ClienteEditarView(UpdateView):
     template_name = "clientes/formulario.html"
     success_url = reverse_lazy("clientes:lista")
 
-
-
 @login_required
 def buscar_clientes(request):
     entrenador = request.user
     query = request.GET.get("q", "").strip()
 
-    # Todos los clientes del sistema
-    clientes = Cliente.objects.all()
+    # Base: todos los clientes
+    clientes_qs = Cliente.objects.all().order_by("nombre")
 
+    # Filtrado backend (opcional)
     if query:
-        clientes = clientes.filter(
-            Q(nombre__icontains=query) |
-            Q(apellido__icontains=query) |
-            Q(email__icontains=query) |
-            Q(telefono__icontains=query)
-        )
+        palabras = query.split()
+        for palabra in palabras:
+            clientes_qs = clientes_qs.filter(
+                Q(nombre__icontains=palabra) |
+                Q(usuario__email__icontains=palabra)
+            )
 
-    # Para saber si ya es alumno del entrenador
+    # Clientes asignados
     clientes_asignados = set(entrenador.clientes.values_list("id", flat=True))
 
     return render(request, "clientes/buscar.html", {
-        "clientes": clientes,
+        "clientes": clientes_qs,  # 👈 SIN paginación
         "query": query,
         "clientes_asignados": clientes_asignados,
     })
+
+from django.http import JsonResponse
+
+@login_required
+def buscar_clientes_ajax(request):
+    query = request.GET.get("q", "").strip()
+    clientes_qs = Cliente.objects.all()
+
+    if query:
+        palabras = query.split()
+        for palabra in palabras:
+            clientes_qs = clientes_qs.filter(
+                Q(nombre__icontains=palabra) |
+                Q(usuario__email__icontains=palabra) |
+                Q(usuario__tel_cel__icontains=palabra)
+            )
+
+    resultados = [
+        {
+            "id": c.id,
+            "nombre": c.nombre,
+            "email": getattr(c.usuario, "email", "-"),
+        }
+        for c in clientes_qs[:8]  # máximo 8 resultados
+    ]
+
+    return JsonResponse({"resultados": resultados})
+
 
 @login_required
 def asignar_cliente(request, cliente_id):
     cliente = get_object_or_404(Cliente, id=cliente_id)
     entrenador = request.user
-
     cliente.entrenadores.add(entrenador)
     messages.success(request, f"{cliente.nombre} fue agregado a tus clientes.")
-
-    return redirect("clientes:buscar")
+    next_url = request.GET.get("next")
+    if next_url:
+        return redirect(next_url)
+    return redirect("clientes:lista")
 
 @login_required
 def desasignar_cliente(request, cliente_id):
     cliente = get_object_or_404(Cliente, id=cliente_id)
     entrenador = request.user
-
     cliente.entrenadores.remove(entrenador)
     messages.success(request, f"{cliente.nombre} fue removido de tus clientes.")
-
+    next_url = request.GET.get("next")
+    if next_url:
+        return redirect(next_url)
     return redirect("clientes:lista")

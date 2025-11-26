@@ -23,6 +23,8 @@ urlpatterns = [
         success_url=reverse_lazy("clientes:lista")
     ), name="eliminar"),
     path("buscar/", views.buscar_clientes, name="buscar"),
+    path("buscar/ajax/", views.buscar_clientes_ajax, name="buscar_ajax"),
+
     path("asignar/<int:cliente_id>/", views.asignar_cliente, name="asignar"),
     path("desasignar/<int:cliente_id>/", views.desasignar_cliente, name="desasignar"),
     
