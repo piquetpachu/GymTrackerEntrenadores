@@ -4,9 +4,10 @@ from .models import Rutina, EntradaEjercicio
 from clientes.models import Cliente
 from .forms import RutinaForm, EntradaEjercicioForm
 from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # CRUD de Rutinas
-class RutinaListaView(ListView):
+class RutinaListaView(LoginRequiredMixin,ListView):
     model = Rutina
     template_name = "rutinas/lista.html"
     context_object_name = "rutinas"
